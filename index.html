@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#fafaf7" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-<title>The List · Marek & Zuzanna</title>
+<title>The List · Zuzanna & Marek</title>
 
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🛒%3C/text%3E%3C/svg%3E" />
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='44' fill='%23fafaf7'/%3E%3Ctext x='50%25' y='52%25' dominant-baseline='middle' text-anchor='middle' font-size='110'%3E🛒%3C/text%3E%3C/svg%3E" />
@@ -1077,6 +1077,155 @@
     font-size: 14px;
   }
 
+  /* ======================== CATALOGUE ======================== */
+  .cat-search-bar {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 14px 16px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow-sm);
+  }
+  .cat-search-wrap {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--bg-soft);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    border: 1.5px solid transparent;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .cat-search-wrap:focus-within {
+    background: var(--surface);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-soft);
+  }
+  .cat-search-icon { color: var(--ink-faint); flex-shrink: 0; }
+  .cat-search-wrap input {
+    flex: 1; border: none; background: none;
+    font-size: 15px; color: var(--ink);
+    padding: 0; outline: none;
+  }
+  .cat-search-clear {
+    color: var(--ink-faint); font-size: 13px;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    display: grid; place-items: center;
+    flex-shrink: 0;
+    transition: background 0.15s, color 0.15s;
+  }
+  .cat-search-clear:hover { background: var(--line); color: var(--ink); }
+  .cat-filter-row {
+    display: flex; gap: 6px;
+    overflow-x: auto; scrollbar-width: none;
+    padding-top: 12px;
+  }
+  .cat-filter-row::-webkit-scrollbar { display: none; }
+  .cat-filter-chip {
+    flex-shrink: 0;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 12px; font-weight: 500;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--ink-soft);
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .cat-filter-chip.active {
+    background: var(--ink);
+    color: var(--bg);
+    border-color: var(--ink);
+  }
+
+  .catalogue-group { margin-bottom: 26px; }
+  .catalogue-group-head {
+    display: flex; align-items: center; gap: 10px;
+    padding: 0 6px 10px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-weight: 600;
+    color: var(--ink-soft);
+  }
+  .catalogue-group-head .icon { font-size: 16px; }
+  .catalogue-group-head .count {
+    margin-left: auto;
+    font-size: 11px; color: var(--ink-faint);
+    font-weight: 500; letter-spacing: 0; text-transform: none;
+  }
+
+  .product-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    display: flex; align-items: center; gap: 12px;
+    transition: all 0.15s;
+    cursor: pointer;
+  }
+  .product-card:hover, .product-card:active { background: var(--bg-soft); border-color: var(--accent); }
+  .product-card-body { flex: 1; min-width: 0; }
+  .product-card-name {
+    font-size: 15px; font-weight: 500;
+    color: var(--ink);
+    word-break: break-word;
+  }
+  .product-card-meta {
+    display: flex; align-items: center; gap: 6px;
+    margin-top: 3px; flex-wrap: wrap;
+    font-size: 12px; color: var(--ink-faint);
+  }
+  .product-card-meta .store-badge {
+    background: var(--bg-soft);
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px; color: var(--ink-soft);
+  }
+  .product-card-meta .bought {
+    font-size: 11px; color: var(--ink-faint);
+  }
+  .product-card-right {
+    display: flex; flex-direction: column; align-items: flex-end; gap: 6px;
+    flex-shrink: 0;
+  }
+  .product-card-price {
+    font-family: var(--display);
+    font-size: 18px; font-weight: 500;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  .product-card-price.none {
+    font-family: var(--body);
+    font-size: 12px; color: var(--ink-faint);
+    font-style: italic; font-weight: 400;
+  }
+  .product-add-list {
+    background: var(--sage-soft);
+    color: var(--sage);
+    border-radius: 999px;
+    padding: 3px 10px;
+    font-size: 11px; font-weight: 600;
+    white-space: nowrap;
+    transition: background 0.15s;
+  }
+  .product-add-list:hover { background: var(--sage); color: white; }
+
+  .catalogue-empty {
+    text-align: center;
+    padding: 40px 24px;
+    color: var(--ink-faint);
+  }
+  .catalogue-empty .emo { font-size: 40px; margin-bottom: 10px; opacity: 0.7; }
+  .catalogue-empty h3 {
+    font-family: var(--display);
+    font-style: italic; font-weight: 400;
+    font-size: 20px; color: var(--ink-soft);
+    margin: 0 0 6px;
+  }
+  .catalogue-empty p { font-size: 13px; margin: 0; line-height: 1.5; }
+
   @media (min-width: 720px) {
     main { max-width: 640px; margin: 0 auto; padding-left: 24px; padding-right: 24px; }
     .topbar-inner, .tabs, .sync-status { max-width: 640px; margin: 0 auto; }
@@ -1092,16 +1241,16 @@
       <div class="logo-mark">🛒</div>
       <h1>The <em>List</em></h1>
       <div class="names-row">
-        <span>Marek</span>
-        <span class="heart">♥</span>
         <span>Zuzanna</span>
+        <span class="heart">♥</span>
+        <span>Marek</span>
       </div>
       <p class="tagline">Sign in to continue.</p>
     </div>
 
     <div class="who-pick" id="who-pick">
-      <button class="who-btn" data-who="marek">Marek</button>
       <button class="who-btn" data-who="zuzanna">Zuzanna</button>
+      <button class="who-btn" data-who="marek">Marek</button>
     </div>
     <input type="password" class="login-input" id="login-password" placeholder="Password" autocomplete="current-password" />
     <button class="login-btn" id="login-btn" disabled>Sign in</button>
@@ -1130,6 +1279,7 @@
       <button class="tab active" data-tab="list">List <span class="count" id="tab-list-count">0</span></button>
       <button class="tab" data-tab="shop">Shop</button>
       <button class="tab" data-tab="notes">Notes <span class="count" id="tab-notes-count">0</span></button>
+      <button class="tab" data-tab="catalogue">Catalogue <span class="count" id="tab-cat-count">0</span></button>
       <button class="tab" data-tab="stats">Stats</button>
     </div>
     <div class="sync-status">
@@ -1185,6 +1335,19 @@
       <div class="notes-grid" id="notes-container">
         <div class="item-skel skel" style="height:80px"></div>
       </div>
+    </section>
+
+    <!-- CATALOGUE TAB -->
+    <section id="tab-catalogue" class="tab-content" style="display:none;">
+      <div class="cat-search-bar">
+        <div class="cat-search-wrap">
+          <svg class="cat-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="cat-search" placeholder="Search products…" autocomplete="off" />
+          <button id="cat-search-clear" class="cat-search-clear" style="display:none">✕</button>
+        </div>
+        <div class="cat-filter-row" id="cat-filter-row"></div>
+      </div>
+      <div id="catalogue-container"></div>
     </section>
 
     <!-- STATS TAB -->
@@ -1367,6 +1530,72 @@
   </div>
 </div>
 
+<!-- EDIT PRODUCT SHEET -->
+<div class="sheet" id="sheet-edit-product">
+  <div class="sheet-handle"></div>
+  <div class="sheet-head">
+    <div class="sheet-title">Edit <em>product</em></div>
+    <button class="sheet-close" data-close>✕</button>
+  </div>
+  <div class="sheet-body">
+    <input type="hidden" id="edit-product-id" />
+    <div class="field">
+      <label class="field-label">Name</label>
+      <input type="text" id="edit-product-name" placeholder="Product name" autocomplete="off" />
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label">Price</label>
+        <div class="price-input-wrap">
+          <input type="number" id="edit-product-price" placeholder="0.00" min="0" step="0.01" inputmode="decimal" />
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">Store</label>
+        <select id="edit-product-store"></select>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">Category</label>
+      <div class="cat-grid" id="edit-cat-grid"></div>
+    </div>
+    <button class="submit-btn" id="edit-product-submit">Save changes</button>
+    <button class="danger-btn" id="delete-product-btn" style="text-align:center;margin-top:6px">Delete from catalogue</button>
+  </div>
+</div>
+
+<!-- ADD PRODUCT SHEET -->
+<div class="sheet" id="sheet-add-product">
+  <div class="sheet-handle"></div>
+  <div class="sheet-head">
+    <div class="sheet-title">Add <em>product</em></div>
+    <button class="sheet-close" data-close>✕</button>
+  </div>
+  <div class="sheet-body">
+    <div class="field">
+      <label class="field-label">Name</label>
+      <input type="text" id="new-product-name" placeholder="e.g. Whole milk" autocomplete="off" />
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label">Price (optional)</label>
+        <div class="price-input-wrap">
+          <input type="number" id="new-product-price" placeholder="0.00" min="0" step="0.01" inputmode="decimal" />
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">Store</label>
+        <select id="new-product-store"></select>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">Category</label>
+      <div class="cat-grid" id="new-cat-grid"></div>
+    </div>
+    <button class="submit-btn" id="new-product-submit">Add to catalogue</button>
+  </div>
+</div>
+
 <!-- CLEAR STATS CONFIRM -->
 <div class="sheet" id="sheet-confirm-clear">
   <div class="sheet-handle"></div>
@@ -1421,14 +1650,16 @@ const state = {
   stores: [],
   notes: [],
   trips: [],
-  products: [],          // product catalogue
+  products: [],
   selectedCategory: "other",
   selectedStore: "",
   activeTab: "list",
   shoppingMode: false,
   realtimeChannels: [],
   charts: {},
-  acIndex: -1            // keyboard nav index for autocomplete
+  acIndex: -1,
+  catalogueSearch: "",
+  catalogueFilter: "all"   // "all" or a category id
 };
 
 let supabase = null;
@@ -1668,6 +1899,7 @@ function renderAll() {
   renderList();
   renderShop();
   renderNotes();
+  renderCatalogue();
   renderStats();
   renderCounts();
   renderStoreOptions();
@@ -1678,6 +1910,7 @@ function renderCounts() {
   const open = state.items.filter(i => !i.checked).length;
   $("#tab-list-count").textContent = open;
   $("#tab-notes-count").textContent = state.notes.length;
+  $("#tab-cat-count").textContent = state.products.length;
 }
 
 function renderSettings() {
@@ -1867,6 +2100,134 @@ function renderStoreOptions() {
   sel.innerHTML = `<option value="">— pick one —</option>` +
     state.stores.map(s => `<option value="${escapeHTML(s.name)}">${escapeHTML(s.name)}</option>`).join("");
   if (current && state.stores.find(s => s.name === current)) sel.value = current;
+
+  // Also update edit/new product store dropdowns
+  const editSel = $("#edit-product-store");
+  const newSel = $("#new-product-store");
+  const opts = `<option value="">— any —</option>` +
+    state.stores.map(s => `<option value="${escapeHTML(s.name)}">${escapeHTML(s.name)}</option>`).join("");
+  if (editSel) editSel.innerHTML = opts;
+  if (newSel) newSel.innerHTML = opts;
+}
+
+// ============================================================================
+// Catalogue
+// ============================================================================
+function renderCatalogue() {
+  const container = $("#catalogue-container");
+  const q = state.catalogueSearch.toLowerCase();
+  const filterCat = state.catalogueFilter;
+
+  // Filter products
+  let products = state.products.slice();
+  if (q) products = products.filter(p => p.name.toLowerCase().includes(q) || (p.store||"").toLowerCase().includes(q));
+  if (filterCat !== "all") products = products.filter(p => (p.category || "other") === filterCat);
+
+  // Sort by use_count desc, then name
+  products.sort((a,b) => (b.use_count||0) - (a.use_count||0) || a.name.localeCompare(b.name));
+
+  // Build category filter chips
+  const filterRow = $("#cat-filter-row");
+  const presentCats = [...new Set(state.products.map(p => p.category || "other"))];
+  const catChips = [{ id: "all", label: "All", icon: "✦" }, ...CATEGORIES.filter(c => presentCats.includes(c.id))];
+  filterRow.innerHTML = catChips.map(c => `
+    <button class="cat-filter-chip ${state.catalogueFilter === c.id ? "active" : ""}" data-filter="${c.id}">
+      ${c.icon || ""} ${c.label}
+    </button>`).join("");
+  $$(".cat-filter-chip", filterRow).forEach(btn => {
+    btn.addEventListener("click", () => {
+      state.catalogueFilter = btn.dataset.filter;
+      renderCatalogue();
+    });
+  });
+
+  // Update search clear button
+  const clearBtn = $("#cat-search-clear");
+  if (clearBtn) clearBtn.style.display = q ? "" : "none";
+
+  if (products.length === 0) {
+    container.innerHTML = state.products.length === 0
+      ? `<div class="catalogue-empty">
+          <div class="emo">🏪</div>
+          <h3>No products yet</h3>
+          <p>Your catalogue builds automatically as you add items and finish trips. Or tap "+" to add one manually.</p>
+        </div>`
+      : `<div class="catalogue-empty">
+          <div class="emo">🔍</div>
+          <h3>No matches</h3>
+          <p>Try a different search or filter.</p>
+        </div>`;
+    return;
+  }
+
+  // Group by category
+  const groups = {};
+  for (const p of products) {
+    const cid = CAT_BY_ID[p.category] ? p.category : "other";
+    (groups[cid] ||= []).push(p);
+  }
+
+  const html = [];
+  for (const cat of CATEGORIES) {
+    const arr = groups[cat.id];
+    if (!arr || arr.length === 0) continue;
+    html.push(`
+      <div class="catalogue-group">
+        <div class="catalogue-group-head">
+          <span class="icon">${cat.icon}</span>
+          <span>${cat.label}</span>
+          <span class="count">${arr.length}</span>
+        </div>
+        ${arr.map(productCardHTML).join("")}
+      </div>`);
+  }
+  container.innerHTML = html.join("");
+
+  // Bind events on product cards
+  $$(".product-card", container).forEach(card => {
+    const pid = card.dataset.pid;
+    // tap card body = open edit sheet
+    card.addEventListener("click", (e) => {
+      if (e.target.closest(".product-add-list")) return; // handled below
+      openEditProduct(pid);
+    });
+    // "Add to list" button
+    const addBtn = card.querySelector(".product-add-list");
+    if (addBtn) {
+      addBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        addProductToList(pid);
+      });
+    }
+  });
+}
+
+function productCardHTML(p) {
+  const cat = CAT_BY_ID[p.category] || CAT_BY_ID.other;
+  const priceHtml = p.price != null
+    ? `<div class="product-card-price">${fmtMoney(p.price)}</div>`
+    : `<div class="product-card-price none">no price</div>`;
+  const alreadyOnList = state.items.some(i =>
+    !i.checked &&
+    i.name.toLowerCase() === p.name.toLowerCase() &&
+    (i.store || "") === (p.store || "")
+  );
+  return `
+    <div class="product-card" data-pid="${escapeHTML(p.id)}">
+      <div class="product-card-body">
+        <div class="product-card-name">${escapeHTML(p.name)}</div>
+        <div class="product-card-meta">
+          ${p.store ? `<span class="store-badge">${escapeHTML(p.store)}</span>` : ""}
+          <span class="bought">bought ${p.use_count || 1}×</span>
+        </div>
+      </div>
+      <div class="product-card-right">
+        ${priceHtml}
+        <button class="product-add-list" ${alreadyOnList ? "disabled style='opacity:0.5'" : ""}>
+          ${alreadyOnList ? "on list" : "+ list"}
+        </button>
+      </div>
+    </div>`;
 }
 
 // ============================================================================
@@ -2055,8 +2416,8 @@ function bindEvents() {
       finishTripPrompt();
     } else if (state.activeTab === "notes") {
       openSheet("sheet-add-note");
-    } else if (state.activeTab === "stats") {
-      openSheet("sheet-add-item");
+    } else if (state.activeTab === "catalogue") {
+      openAddProduct();
     } else {
       openSheet("sheet-add-item");
     }
@@ -2115,19 +2476,188 @@ function bindEvents() {
   $("#clear-stats-btn").addEventListener("click", () => { closeSheets(); setTimeout(() => openSheet("sheet-confirm-clear"), 50); });
   $("#confirm-clear-btn").addEventListener("click", clearStats);
 
-  // Build category picker
-  const grid = $("#cat-grid");
+  // Catalogue search
+  $("#cat-search").addEventListener("input", e => {
+    state.catalogueSearch = e.target.value;
+    renderCatalogue();
+  });
+  $("#cat-search-clear").addEventListener("click", () => {
+    $("#cat-search").value = "";
+    state.catalogueSearch = "";
+    renderCatalogue();
+  });
+
+  // Edit product sheet
+  $("#edit-product-submit").addEventListener("click", saveEditProduct);
+  $("#delete-product-btn").addEventListener("click", deleteProduct);
+
+  // New product sheet
+  $("#new-product-submit").addEventListener("click", submitNewProduct);
+  $("#new-product-name").addEventListener("keydown", e => { if (e.key === "Enter") submitNewProduct(); });
+
+  // Build edit cat grid
+  buildCatGrid("edit-cat-grid", "editSelectedCategory");
+  buildCatGrid("new-cat-grid", "newSelectedCategory");
+
+  // Build category pickers
+  buildCatGrid("cat-grid", "selectedCategory");
+}
+
+function buildCatGrid(gridId, stateKey) {
+  const grid = $("#" + gridId);
+  if (!grid) return;
   grid.innerHTML = CATEGORIES.map(c => `
-    <button class="cat-pick ${c.id === state.selectedCategory ? "active":""}" data-cat="${c.id}">
+    <button class="cat-pick ${state[stateKey] === c.id || (stateKey === "selectedCategory" && c.id === "other" && !state[stateKey]) ? "active" : ""}" data-cat="${c.id}">
       <span class="ic">${c.icon}</span>
       <span>${c.label}</span>
     </button>`).join("");
   grid.addEventListener("click", e => {
     const b = e.target.closest(".cat-pick");
     if (!b) return;
-    state.selectedCategory = b.dataset.cat;
+    state[stateKey] = b.dataset.cat;
     $$(".cat-pick", grid).forEach(x => x.classList.toggle("active", x === b));
   });
+}
+
+// ============================================================================
+// Catalogue actions
+// ============================================================================
+function openEditProduct(pid) {
+  const p = state.products.find(x => x.id === pid);
+  if (!p) return;
+  $("#edit-product-id").value = p.id;
+  $("#edit-product-name").value = p.name;
+  $("#edit-product-price").value = p.price != null ? Number(p.price).toFixed(2) : "";
+  renderStoreOptions();
+  setTimeout(() => { if ($("#edit-product-store")) $("#edit-product-store").value = p.store || ""; }, 50);
+
+  // Set category on the edit grid
+  state.editSelectedCategory = p.category || "other";
+  const editGrid = $("#edit-cat-grid");
+  if (editGrid) {
+    $$(".cat-pick", editGrid).forEach(x => x.classList.toggle("active", x.dataset.cat === state.editSelectedCategory));
+  }
+  openSheet("sheet-edit-product");
+}
+
+async function saveEditProduct() {
+  const id = $("#edit-product-id").value;
+  const name = $("#edit-product-name").value.trim();
+  if (!name) return;
+  const priceStr = $("#edit-product-price").value;
+  const price = priceStr !== "" ? parseFloat(priceStr) : null;
+  const store = $("#edit-product-store").value || null;
+  const category = state.editSelectedCategory || "other";
+
+  const updates = { name, price, store, category };
+
+  // Update product in DB
+  const { error } = await supabase.from("products").update(updates).eq("id", id);
+  if (error) { showToast("Couldn't save"); console.error(error); return; }
+
+  // Update local state
+  const idx = state.products.findIndex(p => p.id === id);
+  if (idx >= 0) Object.assign(state.products[idx], updates);
+
+  // Also update any matching items currently on the list
+  const matchingItems = state.items.filter(i =>
+    !i.checked &&
+    i.name.toLowerCase() === (state.products[idx]?.name || name).toLowerCase()
+  );
+  for (const item of matchingItems) {
+    const itemUpdates = {};
+    if (price != null) itemUpdates.price = price;
+    if (store) itemUpdates.store = store;
+    itemUpdates.category = category;
+    if (Object.keys(itemUpdates).length > 0) {
+      await supabase.from("items").update(itemUpdates).eq("id", item.id);
+      Object.assign(item, itemUpdates);
+    }
+  }
+
+  closeSheets();
+  renderAll();
+  showToast("Saved" + (matchingItems.length ? ` · updated ${matchingItems.length} list item${matchingItems.length > 1 ? "s" : ""}` : ""));
+}
+
+async function deleteProduct() {
+  const id = $("#edit-product-id").value;
+  const { error } = await supabase.from("products").delete().eq("id", id);
+  if (error) { showToast("Couldn't delete"); console.error(error); return; }
+  state.products = state.products.filter(p => p.id !== id);
+  closeSheets();
+  renderCatalogue();
+  renderCounts();
+  renderSettings();
+  showToast("Removed from catalogue");
+}
+
+function openAddProduct() {
+  state.newSelectedCategory = "other";
+  $("#new-product-name").value = "";
+  $("#new-product-price").value = "";
+  renderStoreOptions();
+  setTimeout(() => { if ($("#new-product-store")) $("#new-product-store").value = ""; }, 50);
+  const newGrid = $("#new-cat-grid");
+  if (newGrid) $$(".cat-pick", newGrid).forEach(x => x.classList.toggle("active", x.dataset.cat === "other"));
+  openSheet("sheet-add-product");
+}
+
+async function submitNewProduct() {
+  const name = $("#new-product-name").value.trim();
+  if (!name) { $("#new-product-name").focus(); return; }
+  const priceStr = $("#new-product-price").value;
+  const price = priceStr !== "" ? parseFloat(priceStr) : null;
+  const store = $("#new-product-store").value || null;
+  const category = state.newSelectedCategory || "other";
+
+  // Check for duplicate
+  const dupe = state.products.find(p =>
+    p.name.toLowerCase() === name.toLowerCase() && (p.store || "") === (store || "")
+  );
+  if (dupe) { showToast("Already in catalogue"); return; }
+
+  const newProd = { name, price, store, category, use_count: 0, last_used: new Date().toISOString() };
+  const { data, error } = await supabase.from("products").insert(newProd).select().single();
+  if (error) { showToast("Couldn't add"); console.error(error); return; }
+  state.products.push(data);
+  closeSheets();
+  renderCatalogue();
+  renderCounts();
+  renderSettings();
+  showToast("Added to catalogue");
+}
+
+async function addProductToList(pid) {
+  const p = state.products.find(x => x.id === pid);
+  if (!p) return;
+  const item = {
+    name: p.name,
+    price: p.price ?? null,
+    store: p.store || null,
+    category: p.category || "other",
+    qty: p.qty || null,
+    unit: p.unit || null,
+    checked: false,
+    added_by: state.user.name,
+    added_at: new Date().toISOString()
+  };
+  const tempId = "tmp_" + Date.now();
+  state.items.unshift({ ...item, id: tempId });
+  renderList();
+  renderCatalogue(); // refresh "on list" buttons
+
+  const { data, error } = await supabase.from("items").insert(item).select().single();
+  if (error) {
+    state.items = state.items.filter(i => i.id !== tempId);
+    renderList(); renderCatalogue();
+    showToast("Couldn't add to list");
+    return;
+  }
+  const idx = state.items.findIndex(i => i.id === tempId);
+  if (idx >= 0) state.items[idx] = data;
+  renderList(); renderCatalogue(); renderCounts();
+  showToast(`${p.name} added to list`);
 }
 
 function switchTab(tab) {
@@ -2147,6 +2677,11 @@ function switchTab(tab) {
     $("#fab svg").outerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
   } else if (tab === "stats") {
     $("#fab-wrap").style.display = "none";
+  } else if (tab === "catalogue") {
+    $("#fab").classList.remove("finish-trip");
+    $("#fab-label").textContent = "Add product";
+    $("#fab").disabled = false;
+    $("#fab svg").outerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
   } else if (tab === "notes") {
     $("#fab").classList.remove("finish-trip");
     $("#fab-label").textContent = "Add note";
