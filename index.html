@@ -8,142 +8,23 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg: #faf9f6;
-            --accent: #d98c72;
-            --text: #2d2d2d;
-            --white: #ffffff;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        /* Vibe matching image_841f9c.png */
-        header {
-            text-align: center;
-            padding: 40px 20px;
-            animation: fadeIn 1.5s ease-in;
-        }
-
-        .icon-circle {
-            width: 60px;
-            height: 60px;
-            background: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
-
-        h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
-            margin: 10px 0;
-            font-weight: 400;
-        }
-
-        h1 span {
-            font-style: italic;
-            color: var(--accent);
-        }
-
-        .subtitle {
-            font-family: 'Playfair Display', serif;
-            font-style: italic;
-            font-size: 1.1rem;
-            color: #888;
-            margin-bottom: 20px;
-        }
-
-        /* Authentication & Layout */
-        .container {
-            width: 90%;
-            max-width: 450px;
-            padding-bottom: 100px;
-        }
-
-        .card {
-            background: var(--white);
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
-            margin-bottom: 20px;
-        }
-
-        input, select, button {
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            border-radius: 10px;
-            border: 1px solid #eee;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-
-        button {
-            background: var(--text);
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            transition: 0.3s;
-        }
-
-        button.secondary {
-            background: var(--accent);
-        }
-
-        /* Shopping List Styling */
-        .item-row {
-            display: flex;
-            align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid #f5f5f5;
-        }
-
-        .item-row:last-child { border: none; }
-
-        .checkbox {
-            width: 24px;
-            height: 24px;
-            margin-right: 15px;
-            cursor: pointer;
-        }
-
+        :root { --bg: #faf9f6; --accent: #d98c72; --text: #2d2d2d; --white: #ffffff; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        header { text-align: center; padding: 40px 20px; }
+        .icon-circle { width: 60px; height: 60px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        h1 { font-family: 'Playfair Display', serif; font-size: 2.5rem; margin: 10px 0; font-weight: 400; }
+        h1 span { font-style: italic; color: var(--accent); }
+        .subtitle { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.1rem; color: #888; margin-bottom: 20px; }
+        .container { width: 90%; max-width: 450px; padding-bottom: 100px; }
+        .card { background: var(--white); padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); margin-bottom: 20px; }
+        input, select, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid #eee; font-size: 16px; box-sizing: border-box; }
+        button { background: var(--text); color: white; border: none; cursor: pointer; font-weight: 600; }
+        button.secondary { background: var(--accent); }
+        .item-row { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #f5f5f5; }
+        .checkbox { width: 22px; height: 22px; margin-right: 12px; }
         .item-info { flex-grow: 1; }
-        .item-name { font-weight: 600; display: block; }
-        .item-meta { font-size: 0.8rem; color: #999; }
-
-        /* Shopping Mode */
-        .shopping-mode-active {
-            background-color: #f0f4f8;
-        }
-
-        .shopping-mode-active .not-shopping { display: none; }
-
-        #shopping-footer {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            max-width: 450px;
-            background: white;
-            padding: 20px;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
-            display: none;
-        }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .shopping-mode-active { background-color: #f0f4f8; }
+        #shopping-footer { position: fixed; bottom: 0; width: 100%; max-width: 450px; background: white; padding: 20px; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); display: none; }
     </style>
 </head>
 <body>
@@ -154,15 +35,14 @@
     <div class="subtitle">Marek &nbsp; ❤ &nbsp; Zuzanna</div>
 </header>
 
-<div class="container" id="app">
-    <!-- Auth Section -->
+<div class="container">
     <div id="auth-section" class="card">
-        <input type="email" id="email" placeholder="Email">
+        <input type="email" id="email" placeholder="Dummy Email (e.g. marek@home.local)">
         <input type="password" id="password" placeholder="Password">
         <button onclick="login()">Sign In</button>
+        <p id="auth-error" style="color: red; font-size: 0.8rem; text-align: center; display: none;"></p>
     </div>
 
-    <!-- Main App Section (Hidden until login) -->
     <div id="main-section" style="display:none;">
         <div class="card not-shopping">
             <input type="text" id="item-name" placeholder="What do we need?">
@@ -179,17 +59,14 @@
 
         <div class="card">
             <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h3 id="list-title">Current List</h3>
-                <button onclick="toggleShoppingMode()" style="width: auto; padding: 5px 15px; font-size: 0.8rem;">
-                    Shopping Mode
-                </button>
+                <h3>Current List</h3>
+                <button onclick="toggleShoppingMode()" style="width: auto; padding: 5px 10px;">Shop Mode</button>
             </div>
             <div id="shopping-list"></div>
         </div>
 
-        <!-- Reporting -->
         <div class="card not-shopping">
-            <h3>Spend History</h3>
+            <h3>Weekly Spend</h3>
             <canvas id="historyChart"></canvas>
         </div>
     </div>
@@ -198,31 +75,35 @@
 <div id="shopping-footer">
     <div style="display:flex; justify-content: space-between; align-items: center;">
         <div>Total: <strong id="shop-total">£0.00</strong></div>
-        <button onclick="finishShopping()" style="width: auto;" class="secondary">Finish & Save</button>
+        <button onclick="finishShopping()" class="secondary" style="width: auto;">Finish</button>
     </div>
 </div>
 
 <script>
+    // Your specific Supabase credentials
     const supabaseUrl = 'https://yurgugvqdnpmbzqepes.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl1cmd1Z3ZxZG5wcG1ienFlcGVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwNjg3MjUsImV4cCI6MjA5MzY0NDcyNX0.tjX8TmlDS_RJR4BhEN8bkIB8sy-yKpufx8l1UH2Mj-g';
     const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
     let isShoppingMode = false;
-    let currentUser = null;
 
     async function login() {
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
-        const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
+        const errorEl = document.getElementById('auth-error');
         
-        if (error) alert(error.message);
-        else {
-            currentUser = data.user;
+        try {
+            const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+
             document.getElementById('auth-section').style.display = 'none';
             document.getElementById('main-section').style.display = 'block';
             loadItems();
             loadHistory();
             initRealtime();
+        } catch (err) {
+            errorEl.innerText = "Login failed: " + err.message;
+            errorEl.style.display = 'block';
         }
     }
 
@@ -230,30 +111,23 @@
         const name = document.getElementById('item-name').value;
         const price = document.getElementById('item-price').value || 0;
         const shop = document.getElementById('item-shop').value;
-        
         if (!name) return;
 
-        await _supabase.from('items').insert([{ 
-            name, price, shop, added_by: currentUser.email, is_purchased: false 
-        }]);
-
+        await _supabase.from('items').insert([{ name, price, shop, is_purchased: false }]);
         document.getElementById('item-name').value = '';
         document.getElementById('item-price').value = '';
     }
 
     async function loadItems() {
-        const { data } = await _supabase.from('items').select('*').eq('is_purchased', false).order('created_at', { ascending: false });
-        renderList(data);
-    }
-
-    function renderList(items) {
+        const { data } = await _supabase.from('items').select('*').order('created_at', { ascending: false });
         const container = document.getElementById('shopping-list');
-        container.innerHTML = items.map(item => `
+        container.innerHTML = data.map(item => `
             <div class="item-row">
-                <input type="checkbox" class="checkbox" onclick="toggleItem(${item.id}, ${item.is_purchased})">
+                <input type="checkbox" class="checkbox" ${item.is_purchased ? 'checked' : ''} 
+                    onclick="toggleItem(${item.id}, ${item.is_purchased})">
                 <div class="item-info">
-                    <span class="item-name">${item.name}</span>
-                    <span class="item-meta">£${item.price} at ${item.shop}</span>
+                    <span style="${item.is_purchased ? 'text-decoration: line-through; color: #ccc;' : ''}">${item.name}</span>
+                    <div style="font-size: 0.7rem; color: #999;">£${item.price} - ${item.shop}</div>
                 </div>
             </div>
         `).join('');
@@ -261,6 +135,7 @@
 
     async function toggleItem(id, currentStatus) {
         await _supabase.from('items').update({ is_purchased: !currentStatus }).eq('id', id);
+        loadItems();
         if (isShoppingMode) calculateTotal();
     }
 
@@ -268,7 +143,7 @@
         isShoppingMode = !isShoppingMode;
         document.body.classList.toggle('shopping-mode-active');
         document.getElementById('shopping-footer').style.display = isShoppingMode ? 'block' : 'none';
-        if (isShoppingMode) calculateTotal();
+        calculateTotal();
     }
 
     async function calculateTotal() {
@@ -278,53 +153,34 @@
     }
 
     async function finishShopping() {
-        // Get all items checked during this session
-        const { data: checkedItems } = await _supabase.from('items').select('*').eq('is_purchased', true);
-        const total = checkedItems.reduce((acc, curr) => acc + parseFloat(curr.price || 0), 0);
-
-        // Save to history
-        await _supabase.from('shopping_history').insert([{
-            total_spent: total,
-            items_count: checkedItems.length,
-            details: checkedItems
-        }]);
-
-        // Cleanup: Delete checked items from current list
+        const { data: checked } = await _supabase.from('items').select('*').eq('is_purchased', true);
+        const total = checked.reduce((acc, curr) => acc + parseFloat(curr.price || 0), 0);
+        
+        await _supabase.from('shopping_history').insert([{ total_spent: total, items_count: checked.length }]);
         await _supabase.from('items').delete().eq('is_purchased', true);
-
+        
         toggleShoppingMode();
         loadItems();
         loadHistory();
     }
 
     async function loadHistory() {
-        const { data } = await _supabase.from('shopping_history').select('*').order('created_at', { ascending: true }).limit(7);
+        const { data } = await _supabase.from('shopping_history').select('*').order('created_at', { ascending: true });
+        if (!data.length) return;
         const ctx = document.getElementById('historyChart').getContext('2d');
-        
         new Chart(ctx, {
             type: 'line',
             data: {
                 labels: data.map(d => new Date(d.created_at).toLocaleDateString()),
-                datasets: [{
-                    label: 'Total Spent (£)',
-                    data: data.map(d => d.total_spent),
-                    borderColor: '#d98c72',
-                    tension: 0.3,
-                    fill: true,
-                    backgroundColor: 'rgba(217, 140, 114, 0.1)'
-                }]
+                datasets: [{ data: data.map(d => d.total_spent), borderColor: '#d98c72', fill: false }]
             },
             options: { plugins: { legend: { display: false } } }
         });
     }
 
     function initRealtime() {
-        _supabase.channel('custom-all-channel')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'items' }, () => {
-            loadItems();
-        }).subscribe();
+        _supabase.channel('any').on('postgres_changes', { event: '*', schema: 'public', table: 'items' }, () => loadItems()).subscribe();
     }
 </script>
-
 </body>
 </html>
