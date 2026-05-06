@@ -2765,8 +2765,8 @@ async function submitAddItem() {
   const idx = state.items.findIndex(i => i.id === tempId);
   if (idx >= 0) state.items[idx] = data;
   renderAll();
-  // Save to product catalogue (fire & forget)
-  upsertSingleProduct(item);
+  // Save to product catalogue
+  await upsertSingleProduct(item);
   showToast("Added");
 }
 
@@ -3105,7 +3105,7 @@ async function upsertSingleProduct(item) {
     };
     if (item.price != null && item.price !== "") updates.price = item.price;
     if (item.category) updates.category = item.category;
-    supabase.from("products").update(updates).eq("id", existing.id); // fire & forget
+    await supabase.from("products").update(updates).eq("id", existing.id);
     Object.assign(existing, updates);
   } else {
     const newProd = {
@@ -3118,9 +3118,14 @@ async function upsertSingleProduct(item) {
       use_count: 1,
       last_used: new Date().toISOString()
     };
-    const { data } = await supabase.from("products").insert(newProd).select().single();
+    const { data, error } = await supabase.from("products").insert(newProd).select().single();
+    if (error) { console.error("upsertSingleProduct:", error); return; }
     if (data) state.products.push(data);
   }
+  // Re-render catalogue and counts so the new product appears immediately
+  renderCatalogue();
+  renderCounts();
+  renderSettings();
 }
 
 // ============================================================================
