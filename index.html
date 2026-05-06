@@ -1,203 +1,2335 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>The List | Marek & Zuzanna</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>
-        :root { --bg: #faf9f6; --accent: #d98c72; --text: #2d2d2d; --white: #ffffff; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        header { text-align: center; padding: 60px 20px 40px; }
-        .icon-circle { width: 60px; height: 60px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.03); }
-        h1 { font-family: 'Playfair Display', serif; font-size: 2.8rem; margin: 0; font-weight: 400; letter-spacing: -1px; }
-        h1 span { font-style: italic; color: var(--accent); }
-        .subtitle { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.1rem; color: #999; margin-top: 10px; }
-        .container { width: 92%; max-width: 420px; padding-bottom: 120px; }
-        .card { background: var(--white); padding: 25px; border-radius: 24px; box-shadow: 0 15px 40px rgba(0,0,0,0.02); margin-bottom: 20px; border: 1px solid rgba(0,0,0,0.01); }
-        input, select, button { width: 100%; padding: 14px; margin: 8px 0; border-radius: 14px; border: 1px solid #f0f0f0; font-size: 16px; box-sizing: border-box; outline: none; }
-        button { background: var(--text); color: white; border: none; cursor: pointer; font-weight: 600; }
-        button.secondary { background: var(--accent); }
-        .item-row { display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid #fcfcfc; }
-        .checkbox { width: 24px; height: 24px; margin-right: 15px; accent-color: var(--accent); cursor: pointer; }
-        .item-info { flex-grow: 1; }
-        .note-bubble { background: #fdfdfd; padding: 12px; border-radius: 18px; margin-bottom: 12px; border-left: 4px solid var(--accent); font-size: 0.95rem; }
-        .note-meta { font-size: 0.7rem; color: var(--accent); font-weight: 700; margin-bottom: 4px; text-transform: uppercase; }
-        #shop-footer { position: fixed; bottom: 20px; width: 90%; max-width: 380px; background: var(--text); color: white; padding: 20px; border-radius: 24px; display: none; justify-content: space-between; align-items: center; box-shadow: 0 20px 40px rgba(0,0,0,0.2); z-index: 1000; }
-        .shopping-active { background: #f0f2f5; }
-        .shopping-active .hide-in-shop { display: none; }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#fafaf7" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<title>The List · Marek & Zuzanna</title>
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🛒%3C/text%3E%3C/svg%3E" />
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='44' fill='%23fafaf7'/%3E%3Ctext x='50%25' y='52%25' dominant-baseline='middle' text-anchor='middle' font-size='110'%3E🛒%3C/text%3E%3C/svg%3E" />
+<link rel="manifest" href='data:application/json;charset=utf-8,{"name":"The List — Marek %26 Zuzanna","short_name":"The List","start_url":".","scope":".","display":"standalone","orientation":"portrait","theme_color":"%23fafaf7","background_color":"%23fafaf7","icons":[{"src":"data:image/svg+xml;utf8,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 192 192%27><rect width=%27192%27 height=%27192%27 rx=%2744%27 fill=%27%23fafaf7%27/><text x=%2750%25%27 y=%2752%25%27 dominant-baseline=%27middle%27 text-anchor=%27middle%27 font-size=%27110%27>🛒</text></svg>","sizes":"192x192","type":"image/svg+xml","purpose":"any"}]}' />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script type="module">
+  import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
+  window.__createSupabaseClient = createClient;
+  window.dispatchEvent(new Event("supabase-ready"));
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+<style>
+  :root {
+    --bg: #fafaf7;
+    --bg-soft: #f3f1ea;
+    --surface: #ffffff;
+    --ink: #1a1a17;
+    --ink-soft: #5b5a55;
+    --ink-faint: #9c9b94;
+    --line: #ebe9e0;
+    --accent: #d97757;
+    --accent-soft: #f5e6db;
+    --accent-deep: #b85a3d;
+    --sage: #6b8e6f;
+    --sage-soft: #e6ede7;
+    --rose: #c97b86;
+    --rose-soft: #f5e3e6;
+    --gold: #c9a961;
+    --blue: #5b7c99;
+    --blue-soft: #e3eaf0;
+    --shadow-sm: 0 1px 2px rgba(26,26,23,0.04), 0 2px 8px rgba(26,26,23,0.04);
+    --shadow-md: 0 4px 12px rgba(26,26,23,0.06), 0 12px 32px rgba(26,26,23,0.08);
+    --shadow-lg: 0 12px 40px rgba(26,26,23,0.12), 0 32px 80px rgba(26,26,23,0.10);
+    --radius-sm: 10px;
+    --radius: 16px;
+    --radius-lg: 24px;
+    --display: 'Fraunces', Georgia, serif;
+    --body: 'Inter Tight', -apple-system, system-ui, sans-serif;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+  html { background: var(--bg); }
+  body {
+    font-family: var(--body);
+    color: var(--ink);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overscroll-behavior-y: contain;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+  input, textarea, select { font-family: inherit; }
+
+  /* ======================== LOGIN ======================== */
+  .login-wrap {
+    min-height: 100vh; min-height: 100dvh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 32px 24px;
+    padding-top: calc(32px + var(--safe-top));
+    padding-bottom: calc(32px + var(--safe-bottom));
+    background:
+      radial-gradient(ellipse 80% 50% at 50% 0%, rgba(217,119,87,0.08), transparent 60%),
+      radial-gradient(ellipse 60% 40% at 50% 100%, rgba(107,142,111,0.06), transparent 60%),
+      var(--bg);
+    position: relative;
+    overflow: hidden;
+  }
+  .login-wrap::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: radial-gradient(circle at 1px 1px, rgba(26,26,23,0.04) 1px, transparent 0);
+    background-size: 24px 24px;
+    pointer-events: none;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+  }
+  .login-card {
+    position: relative;
+    width: 100%; max-width: 380px;
+    z-index: 1;
+  }
+  .login-card .top { text-align: center; }
+  .logo-mark {
+    width: 72px; height: 72px;
+    margin: 0 auto 28px;
+    display: grid; place-items: center;
+    background: var(--surface);
+    border-radius: 50%;
+    box-shadow: var(--shadow-md);
+    font-size: 36px;
+    animation: float 3s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+  .login-card h1 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(38px, 11vw, 52px);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin: 0 0 14px;
+    color: var(--ink);
+  }
+  .login-card h1 em {
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 300;
+  }
+  .login-card .tagline {
+    color: var(--ink-soft);
+    font-size: 15px;
+    line-height: 1.5;
+    margin: 0 0 28px;
+    letter-spacing: -0.01em;
+  }
+  .names-row {
+    display: flex; align-items: center; justify-content: center; gap: 14px;
+    margin-bottom: 32px;
+    font-family: var(--display);
+    font-style: italic;
+    font-size: 17px;
+    color: var(--ink-soft);
+  }
+  .names-row .heart {
+    color: var(--accent);
+    font-style: normal;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+  }
+
+  .who-pick {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    margin-bottom: 18px;
+  }
+  .who-btn {
+    padding: 16px 12px;
+    background: var(--surface);
+    border: 1.5px solid var(--line);
+    border-radius: var(--radius);
+    font-family: var(--display);
+    font-style: italic;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--ink);
+    transition: all 0.2s;
+  }
+  .who-btn.active {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent-deep);
+    box-shadow: 0 0 0 4px rgba(217,119,87,0.1);
+  }
+  .login-input {
+    width: 100%;
+    padding: 14px 16px;
+    background: var(--surface);
+    border: 1.5px solid var(--line);
+    border-radius: var(--radius);
+    font-size: 16px;
+    color: var(--ink);
+    margin-bottom: 10px;
+    transition: all 0.15s;
+  }
+  .login-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-soft);
+  }
+  .login-btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--ink);
+    color: var(--bg);
+    border-radius: var(--radius);
+    font-size: 15px; font-weight: 600;
+    letter-spacing: -0.01em;
+    transition: transform 0.15s, opacity 0.15s;
+    margin-top: 6px;
+  }
+  .login-btn:disabled { opacity: 0.6; }
+  .login-btn:active:not(:disabled) { transform: scale(0.98); }
+  .login-error {
+    color: var(--rose);
+    font-size: 13px;
+    text-align: center;
+    margin-top: 12px;
+    min-height: 18px;
+  }
+  .config-warn {
+    margin-top: 24px;
+    padding: 16px;
+    background: #fff8e6;
+    border: 1px solid #f0d896;
+    border-radius: var(--radius);
+    font-size: 13px;
+    color: #6b5419;
+    text-align: left;
+    line-height: 1.5;
+  }
+  .config-warn strong { display: block; margin-bottom: 4px; color: #4d3c0e; }
+  .config-warn code { background: rgba(0,0,0,0.05); padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+
+  /* ======================== APP ======================== */
+  .app { display: none; flex-direction: column; min-height: 100vh; min-height: 100dvh; }
+  .app.active { display: flex; }
+  .app.shopping-mode { background: linear-gradient(180deg, #fbf5f0 0%, var(--bg) 200px); }
+
+  .topbar {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(250,250,247,0.85);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid var(--line);
+    padding-top: var(--safe-top);
+  }
+  .topbar-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 18px;
+    gap: 12px;
+  }
+  .greeting { display: flex; flex-direction: column; min-width: 0; }
+  .greeting .hi {
+    font-size: 11px; color: var(--ink-faint);
+    text-transform: uppercase; letter-spacing: 0.12em;
+    font-weight: 500;
+  }
+  .greeting .name {
+    font-family: var(--display);
+    font-size: 22px; font-weight: 500;
+    letter-spacing: -0.02em; line-height: 1.1;
+    color: var(--ink);
+  }
+  .greeting .name em { font-style: italic; color: var(--accent); font-weight: 400; }
+
+  .top-actions { display: flex; align-items: center; gap: 6px; }
+  .icon-btn {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    display: grid; place-items: center;
+    color: var(--ink-soft);
+    transition: background 0.15s, color 0.15s, transform 0.15s;
+    position: relative;
+  }
+  .icon-btn:hover, .icon-btn:active { background: var(--bg-soft); color: var(--ink); }
+  .icon-btn:active { transform: scale(0.94); }
+  .avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: grid; place-items: center;
+    font-family: var(--display);
+    font-style: italic;
+    font-weight: 500; font-size: 15px;
+    border: 2px solid var(--surface);
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+  }
+  .avatar.marek { background: var(--sage-soft); color: var(--sage); }
+  .avatar.zuzanna { background: var(--rose-soft); color: var(--rose); }
+
+  .tabs {
+    display: flex; gap: 4px;
+    padding: 0 18px 10px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    flex-shrink: 0;
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 14px; font-weight: 500;
+    color: var(--ink-soft);
+    background: transparent;
+    border: 1px solid transparent;
+    transition: all 0.18s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .tab .count {
+    font-size: 11px;
+    background: var(--bg-soft);
+    padding: 2px 7px;
+    border-radius: 999px;
+    font-weight: 600;
+    color: var(--ink-soft);
+  }
+  .tab.active { background: var(--ink); color: var(--bg); }
+  .tab.active .count { background: rgba(255,255,255,0.18); color: var(--bg); }
+
+  .sync-status {
+    display: flex; align-items: center;
+    font-size: 11px;
+    color: var(--ink-faint);
+    padding: 0 18px 8px;
+  }
+  .sync-pulse {
+    width: 6px; height: 6px;
+    background: var(--sage);
+    border-radius: 50%;
+    margin-right: 6px;
+    animation: syncPulse 2s ease-in-out infinite;
+    display: inline-block;
+  }
+  .sync-pulse.offline { background: var(--ink-faint); animation: none; }
+  @keyframes syncPulse {
+    0%,100% { opacity: 0.4; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.3); }
+  }
+
+  main {
+    flex: 1;
+    padding: 16px 18px 140px;
+    padding-bottom: calc(140px + var(--safe-bottom));
+  }
+
+  /* ======================== LIST TAB ======================== */
+  .progress-card {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--line);
+    position: relative;
+    overflow: hidden;
+  }
+  .progress-card::before {
+    content: '';
+    position: absolute; top: -40px; right: -40px;
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--accent-soft), transparent 70%);
+    opacity: 0.7;
+  }
+  .progress-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 14px;
+    position: relative;
+  }
+  .progress-title {
+    font-family: var(--display);
+    font-size: 26px; font-weight: 500;
+    letter-spacing: -0.02em; line-height: 1;
+  }
+  .progress-title em { font-style: italic; color: var(--accent); font-weight: 400; }
+  .progress-meta {
+    display: flex; gap: 14px;
+    font-size: 12px; color: var(--ink-soft);
+    font-variant-numeric: tabular-nums;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .progress-meta strong { color: var(--ink); font-weight: 600; font-size: 13px; }
+  .shop-mode-cta {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 18px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+    color: white;
+    border-radius: var(--radius);
+    margin-top: 14px;
+    font-weight: 600; font-size: 14px;
+    letter-spacing: -0.01em;
+    box-shadow: 0 4px 14px rgba(217,119,87,0.3);
+    position: relative;
+    transition: transform 0.15s;
+  }
+  .shop-mode-cta:active { transform: scale(0.98); }
+  .shop-mode-cta .arr {
+    width: 32px; height: 32px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: grid; place-items: center;
+  }
+
+  .category {
+    margin-bottom: 24px;
+    animation: fadeInUp 0.4s ease-out backwards;
+  }
+  .category:nth-child(1) { animation-delay: 0.05s; }
+  .category:nth-child(2) { animation-delay: 0.1s; }
+  .category:nth-child(3) { animation-delay: 0.15s; }
+  .category:nth-child(4) { animation-delay: 0.2s; }
+  .category:nth-child(5) { animation-delay: 0.25s; }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .category-head {
+    display: flex; align-items: center; gap: 10px;
+    padding: 0 6px 10px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-weight: 600;
+    color: var(--ink-soft);
+  }
+  .category-head .icon { font-size: 16px; line-height: 1; }
+  .category-head .count {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--ink-faint);
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  .items { display: flex; flex-direction: column; gap: 8px; }
+  .item {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    display: flex; align-items: center; gap: 14px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+  .item-body { flex: 1; min-width: 0; }
+  .item-name {
+    font-size: 15px; font-weight: 500;
+    color: var(--ink); line-height: 1.3;
+    word-break: break-word;
+  }
+  .item-meta {
+    display: flex; align-items: center; gap: 8px;
+    margin-top: 3px;
+    font-size: 12px;
+    color: var(--ink-faint);
+    flex-wrap: wrap;
+  }
+  .item-meta .qty, .item-meta .price {
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-soft);
+    font-weight: 500;
+  }
+  .item-meta .price { color: var(--accent); font-weight: 600; }
+  .item-meta .store-tag {
+    background: var(--bg-soft);
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    color: var(--ink-soft);
+  }
+  .item-meta .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--ink-faint); }
+  .item-delete {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    color: var(--ink-faint);
+    display: grid; place-items: center;
+    transition: color 0.15s, background 0.15s;
+    flex-shrink: 0;
+  }
+  .item-delete:hover, .item-delete:active { color: var(--rose); background: var(--rose-soft); }
+
+  .empty {
+    text-align: center;
+    padding: 60px 24px;
+    color: var(--ink-faint);
+  }
+  .empty .emo { font-size: 48px; margin-bottom: 12px; opacity: 0.7; }
+  .empty h3 {
+    font-family: var(--display);
+    font-style: italic; font-weight: 400;
+    font-size: 22px; color: var(--ink-soft);
+    margin: 0 0 6px;
+  }
+  .empty p { font-size: 14px; margin: 0; }
+
+  /* ======================== SHOPPING MODE ======================== */
+  .shop-banner {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-deep) 100%);
+    color: white;
+    border-radius: var(--radius-lg);
+    padding: 22px 22px 20px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+  }
+  .shop-banner::before {
+    content: '';
+    position: absolute; top: -60px; right: -60px;
+    width: 220px; height: 220px;
+    background: radial-gradient(circle, rgba(255,255,255,0.18), transparent 60%);
+    border-radius: 50%;
+  }
+  .shop-banner-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 4px;
+    position: relative;
+  }
+  .shop-banner-head .label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-weight: 600;
+    opacity: 0.85;
+  }
+  .exit-shop {
+    background: rgba(255,255,255,0.15);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+    transition: background 0.15s;
+  }
+  .exit-shop:hover { background: rgba(255,255,255,0.25); }
+  .shop-total {
+    font-family: var(--display);
+    font-size: 52px;
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    margin: 8px 0 4px;
+    font-variant-numeric: tabular-nums;
+    position: relative;
+  }
+  .shop-total .currency { font-size: 32px; opacity: 0.85; vertical-align: top; line-height: 1.4; margin-right: 2px; }
+  .shop-progress {
+    display: flex; align-items: center; gap: 10px;
+    margin-top: 14px;
+    position: relative;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .shop-progress-bar {
+    flex: 1;
+    height: 6px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .shop-progress-fill {
+    height: 100%;
+    background: white;
+    border-radius: 999px;
+    transition: width 0.4s ease;
+    width: 0;
+  }
+
+  .shop-store-group {
+    margin-bottom: 22px;
+  }
+  .shop-store-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 6px 10px;
+    font-family: var(--display);
+    font-style: italic;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .shop-store-head .store-total {
+    font-family: var(--body);
+    font-style: normal;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    font-variant-numeric: tabular-nums;
+  }
+  .shop-item {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 14px;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  .shop-item:active { transform: scale(0.99); }
+  .shop-item.checked {
+    background: var(--sage-soft);
+    border-color: transparent;
+  }
+  .shop-item.checked .shop-item-name {
+    text-decoration: line-through;
+    text-decoration-thickness: 1.5px;
+    color: var(--ink-faint);
+  }
+  .shop-item.checked .shop-item-price { opacity: 0.5; }
+  .shop-checkbox {
+    flex-shrink: 0;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 2px solid var(--line);
+    background: var(--surface);
+    display: grid; place-items: center;
+    transition: all 0.2s;
+  }
+  .shop-item.checked .shop-checkbox {
+    background: var(--sage);
+    border-color: var(--sage);
+  }
+  .shop-checkbox svg {
+    width: 16px; height: 16px;
+    stroke: white;
+    stroke-width: 3.5;
+    fill: none;
+    stroke-linecap: round; stroke-linejoin: round;
+    stroke-dasharray: 20;
+    stroke-dashoffset: 20;
+    transition: stroke-dashoffset 0.25s ease 0.05s;
+  }
+  .shop-item.checked .shop-checkbox svg { stroke-dashoffset: 0; }
+  .shop-item-body { flex: 1; min-width: 0; }
+  .shop-item-name {
+    font-size: 16px; font-weight: 500;
+    color: var(--ink);
+    word-break: break-word;
+  }
+  .shop-item-meta {
+    font-size: 12px;
+    color: var(--ink-faint);
+    margin-top: 2px;
+  }
+  .shop-item-price {
+    font-family: var(--display);
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+  }
+  .shop-item-price.no-price { color: var(--ink-faint); font-size: 14px; font-style: italic; font-weight: 400; }
+
+  /* ======================== NOTES ======================== */
+  .notes-grid { display: flex; flex-direction: column; gap: 12px; }
+  .note {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    box-shadow: var(--shadow-sm);
+    animation: fadeInUp 0.3s ease-out backwards;
+    position: relative;
+  }
+  .note.from-zuzanna { background: linear-gradient(135deg, var(--rose-soft) 0%, var(--surface) 60%); }
+  .note.from-marek { background: linear-gradient(135deg, var(--sage-soft) 0%, var(--surface) 60%); }
+  .note-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .note-author {
+    display: flex; align-items: center; gap: 8px;
+    font-family: var(--display);
+    font-style: italic;
+    font-size: 15px; font-weight: 500;
+  }
+  .note-author .from { color: var(--ink-faint); font-style: normal; font-weight: 400; }
+  .note.from-zuzanna .note-author strong { color: var(--rose); }
+  .note.from-marek .note-author strong { color: var(--sage); }
+  .note-time {
+    font-size: 11px;
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+  }
+  .note-body {
+    font-size: 15px; line-height: 1.5;
+    color: var(--ink);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .note-delete {
+    position: absolute;
+    top: 10px; right: 10px;
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    color: var(--ink-faint);
+    display: grid; place-items: center;
+    opacity: 0;
+    transition: opacity 0.15s, background 0.15s, color 0.15s;
+  }
+  .note:hover .note-delete, .note:focus-within .note-delete { opacity: 1; }
+  .note-delete:hover { color: var(--rose); background: rgba(255,255,255,0.5); }
+
+  /* ======================== STATS ======================== */
+  .stat-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    margin-bottom: 18px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px;
+    box-shadow: var(--shadow-sm);
+  }
+  .stat-card .label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-faint);
+    font-weight: 600;
+  }
+  .stat-card .value {
+    font-family: var(--display);
+    font-size: 26px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    margin-top: 6px;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-card .value em { font-style: italic; color: var(--accent); font-weight: 400; }
+  .chart-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 18px 18px 14px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow-sm);
+  }
+  .chart-card h3 {
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: 18px;
+    letter-spacing: -0.01em;
+    margin: 0 0 4px;
+  }
+  .chart-card h3 em { font-style: italic; color: var(--accent); font-weight: 400; }
+  .chart-card .sub {
+    font-size: 12px;
+    color: var(--ink-faint);
+    margin-bottom: 12px;
+  }
+  .chart-canvas-wrap {
+    position: relative;
+    height: 220px;
+  }
+
+  /* ======================== FAB / FOOTER BUTTONS ======================== */
+  .fab-wrap {
+    position: fixed;
+    left: 0; right: 0;
+    bottom: calc(20px + var(--safe-bottom));
+    display: flex; justify-content: center;
+    pointer-events: none;
+    z-index: 40;
+  }
+  .fab {
+    pointer-events: auto;
+    height: 56px;
+    padding: 0 24px 0 22px;
+    background: var(--ink);
+    color: var(--bg);
+    border-radius: 999px;
+    display: flex; align-items: center; gap: 10px;
+    font-size: 15px; font-weight: 600;
+    letter-spacing: -0.01em;
+    box-shadow: 0 8px 28px rgba(26,26,23,0.25), 0 2px 6px rgba(26,26,23,0.15);
+    transition: transform 0.15s;
+  }
+  .fab:active { transform: scale(0.96); }
+  .fab svg { width: 20px; height: 20px; }
+  .fab.finish-trip {
+    background: var(--accent);
+    box-shadow: 0 8px 28px rgba(217,119,87,0.35), 0 2px 6px rgba(217,119,87,0.2);
+  }
+  .fab.finish-trip:disabled { opacity: 0.5; }
+
+  /* ======================== SHEETS / MODALS ======================== */
+  .scrim {
+    position: fixed; inset: 0;
+    background: rgba(26,26,23,0.4);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 60;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.25s;
+  }
+  .scrim.active { opacity: 1; pointer-events: auto; }
+
+  .sheet {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    background: var(--surface);
+    border-radius: 28px 28px 0 0;
+    z-index: 70;
+    transform: translateY(100%);
+    transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+    max-height: 92vh;
+    max-height: 92dvh;
+    overflow-y: auto;
+    padding-bottom: calc(20px + var(--safe-bottom));
+    box-shadow: 0 -10px 40px rgba(26,26,23,0.15);
+  }
+  .sheet.active { transform: translateY(0); }
+  .sheet-handle {
+    width: 36px; height: 4px;
+    background: var(--line);
+    border-radius: 999px;
+    margin: 10px auto 0;
+  }
+  .sheet-head {
+    padding: 18px 22px 12px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .sheet-title {
+    font-family: var(--display);
+    font-size: 24px; font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+  .sheet-title em { font-style: italic; color: var(--accent); font-weight: 400; }
+  .sheet-close {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--bg-soft);
+    color: var(--ink-soft);
+    display: grid; place-items: center;
+  }
+  .sheet-body { padding: 8px 22px 22px; }
+
+  .field { margin-bottom: 14px; }
+  .field-label {
+    display: block;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    color: var(--ink-soft);
+    margin-bottom: 8px;
+    padding: 0 4px;
+  }
+  .field input, .field textarea, .field select {
+    width: 100%;
+    padding: 14px 16px;
+    background: var(--bg-soft);
+    border: 1.5px solid transparent;
+    border-radius: var(--radius);
+    font-size: 16px;
+    color: var(--ink);
+    transition: all 0.15s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  .field textarea { resize: vertical; min-height: 100px; line-height: 1.5; }
+  .field input:focus, .field textarea:focus, .field select:focus {
+    outline: none;
+    background: var(--surface);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-soft);
+  }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .price-input-wrap { position: relative; }
+  .price-input-wrap::before {
+    content: '£';
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ink-soft);
+    font-weight: 500;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .price-input-wrap input { padding-left: 28px; }
+
+  .store-row {
+    display: flex; gap: 8px;
+    align-items: stretch;
+  }
+  .store-row select { flex: 1; }
+  .add-store-btn {
+    width: 50px;
+    background: var(--bg-soft);
+    border-radius: var(--radius);
+    color: var(--ink-soft);
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .add-store-btn:hover, .add-store-btn:active { background: var(--accent-soft); color: var(--accent); }
+
+  .cat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .cat-pick {
+    aspect-ratio: 1;
+    background: var(--bg-soft);
+    border: 1.5px solid transparent;
+    border-radius: var(--radius);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 4px;
+    font-size: 11px; font-weight: 500;
+    color: var(--ink-soft);
+    transition: all 0.15s;
+    padding: 4px;
+  }
+  .cat-pick .ic { font-size: 22px; line-height: 1; }
+  .cat-pick.active {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent-deep);
+  }
+
+  .submit-btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--ink);
+    color: var(--bg);
+    border-radius: var(--radius);
+    font-size: 15px; font-weight: 600;
+    letter-spacing: -0.01em;
+    transition: transform 0.15s, opacity 0.15s;
+    margin-top: 8px;
+  }
+  .submit-btn:disabled { opacity: 0.5; }
+  .submit-btn:active:not(:disabled) { transform: scale(0.98); }
+
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(96px + var(--safe-bottom));
+    transform: translateX(-50%) translateY(20px);
+    background: var(--ink);
+    color: var(--bg);
+    padding: 12px 20px;
+    border-radius: 999px;
+    font-size: 13px; font-weight: 500;
+    box-shadow: var(--shadow-md);
+    opacity: 0; pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 100;
+    white-space: nowrap;
+    max-width: 90vw;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+
+  .settings-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .settings-row:last-child { border-bottom: none; }
+  .settings-label { font-size: 14px; }
+  .settings-value { font-size: 13px; color: var(--ink-soft); word-break: break-all; text-align: right; }
+  .danger-btn {
+    color: var(--rose);
+    font-weight: 500; font-size: 14px;
+    padding: 14px 0;
+    width: 100%; text-align: left;
+  }
+
+  .skel {
+    background: linear-gradient(90deg, var(--bg-soft) 0%, var(--line) 50%, var(--bg-soft) 100%);
+    background-size: 200% 100%;
+    animation: skel 1.4s ease-in-out infinite;
+    border-radius: 8px;
+  }
+  @keyframes skel {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+  .item-skel { height: 56px; border-radius: var(--radius); margin-bottom: 8px; }
+
+  /* Confirm dialog */
+  .confirm-content { padding: 0 22px 22px; text-align: center; }
+  .confirm-content .big-num {
+    font-family: var(--display);
+    font-size: 44px;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin: 8px 0 4px;
+    font-variant-numeric: tabular-nums;
+  }
+  .confirm-content .sub {
+    color: var(--ink-soft);
+    font-size: 14px;
+    margin-bottom: 18px;
+  }
+  .confirm-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .confirm-actions .secondary {
+    padding: 14px;
+    background: var(--bg-soft);
+    color: var(--ink);
+    border-radius: var(--radius);
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .confirm-actions .primary {
+    padding: 14px;
+    background: var(--accent);
+    color: white;
+    border-radius: var(--radius);
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  @media (min-width: 720px) {
+    main { max-width: 640px; margin: 0 auto; padding-left: 24px; padding-right: 24px; }
+    .topbar-inner, .tabs, .sync-status { max-width: 640px; margin: 0 auto; }
+  }
+</style>
 </head>
 <body>
 
-<header>
-    <div class="icon-circle">🛒</div>
-    <h1>The <span>List</span></h1>
-    <div class="subtitle">Marek &nbsp; ❤ &nbsp; Zuzanna</div>
-</header>
-
-<div class="container">
-    <!-- AUTH -->
-    <div id="auth-box" class="card">
-        <input type="email" id="email" placeholder="Email">
-        <input type="password" id="password" placeholder="Password">
-        <button onclick="login()">Sign In</button>
-        <p id="auth-err" style="color:var(--accent); font-size:0.8rem; text-align:center; display:none; margin-top:10px;"></p>
+<!-- ======================== LOGIN ======================== -->
+<div id="login" class="login-wrap">
+  <div class="login-card">
+    <div class="top">
+      <div class="logo-mark">🛒</div>
+      <h1>The <em>List</em></h1>
+      <div class="names-row">
+        <span>Marek</span>
+        <span class="heart">♥</span>
+        <span>Zuzanna</span>
+      </div>
+      <p class="tagline">Sign in to continue.</p>
     </div>
 
-    <!-- MAIN -->
-    <div id="app" style="display:none;">
-        <div class="card hide-in-shop">
-            <input type="text" id="new-item" placeholder="What do we need?">
-            <div style="display:flex; gap:10px;">
-                <select id="new-shop"><option>Lidl</option><option>Tesco</option><option>Home Bargains</option></select>
-                <input type="number" id="new-price" placeholder="£" step="0.01">
-            </div>
-            <button class="secondary" onclick="addItem()">Add to List</button>
-        </div>
-
-        <div class="card">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <h3 style="font-family:'Playfair Display'; margin:0;">Current List</h3>
-                <button onclick="toggleShop()" style="width:auto; padding:6px 16px; font-size:0.8rem;">Shop Mode</button>
-            </div>
-            <div id="items-list"></div>
-        </div>
-
-        <div class="card hide-in-shop">
-            <h3 style="font-family:'Playfair Display'; margin-top:0;">Notes for Each Other</h3>
-            <div id="notes-list"></div>
-            <div style="display:flex; gap:10px; margin-top:15px;">
-                <input type="text" id="new-note" placeholder="Write a note...">
-                <button onclick="addNote()" class="secondary" style="width:80px;">Send</button>
-            </div>
-        </div>
-
-        <div class="card hide-in-shop">
-            <h3 style="font-family:'Playfair Display'; margin-top:0;">Spend Over Time</h3>
-            <canvas id="historyChart"></canvas>
-        </div>
+    <div class="who-pick" id="who-pick">
+      <button class="who-btn" data-who="marek">Marek</button>
+      <button class="who-btn" data-who="zuzanna">Zuzanna</button>
     </div>
+    <input type="password" class="login-input" id="login-password" placeholder="Password" autocomplete="current-password" />
+    <button class="login-btn" id="login-btn" disabled>Sign in</button>
+    <div class="login-error" id="login-error"></div>
+
+    <div id="config-warn" class="config-warn" style="display:none;"></div>
+  </div>
 </div>
 
-<div id="shop-footer">
-    <span>Total: <strong id="live-total">£0.00</strong></span>
-    <button onclick="finishShop()" class="secondary" style="width:auto; padding:10px 24px;">Finish & Archive</button>
+<!-- ======================== APP ======================== -->
+<div id="app" class="app">
+  <header class="topbar" id="topbar">
+    <div class="topbar-inner">
+      <div class="greeting">
+        <span class="hi" id="greet-hi">Good morning</span>
+        <span class="name" id="greet-name">Hello</span>
+      </div>
+      <div class="top-actions">
+        <button class="icon-btn" id="settings-btn" aria-label="Settings">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+        <div class="avatar" id="avatar"></div>
+      </div>
+    </div>
+    <div class="tabs" id="tabs">
+      <button class="tab active" data-tab="list">List <span class="count" id="tab-list-count">0</span></button>
+      <button class="tab" data-tab="shop">Shop</button>
+      <button class="tab" data-tab="notes">Notes <span class="count" id="tab-notes-count">0</span></button>
+      <button class="tab" data-tab="stats">Stats</button>
+    </div>
+    <div class="sync-status">
+      <span class="sync-pulse" id="sync-pulse"></span>
+      <span id="sync-text">Connecting…</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- LIST TAB -->
+    <section id="tab-list" class="tab-content">
+      <div class="progress-card">
+        <div class="progress-head">
+          <div class="progress-title">Shopping <em>list</em></div>
+        </div>
+        <div class="progress-meta">
+          <span><strong id="prog-count">0</strong> items</span>
+          <span><strong id="prog-with-price">0</strong> priced</span>
+          <span><strong id="prog-est">£0.00</strong> est.</span>
+        </div>
+        <button class="shop-mode-cta" id="enter-shop-mode">
+          <span>Start shopping →</span>
+          <span class="arr">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </span>
+        </button>
+      </div>
+      <div id="items-container">
+        <div class="item-skel skel"></div>
+        <div class="item-skel skel"></div>
+        <div class="item-skel skel"></div>
+      </div>
+    </section>
+
+    <!-- SHOP MODE TAB -->
+    <section id="tab-shop" class="tab-content" style="display:none;">
+      <div class="shop-banner">
+        <div class="shop-banner-head">
+          <span class="label">Running total</span>
+          <button class="exit-shop" id="exit-shop">Exit</button>
+        </div>
+        <div class="shop-total"><span class="currency">£</span><span id="shop-total-num">0.00</span></div>
+        <div class="shop-progress">
+          <span id="shop-progress-text">0 / 0</span>
+          <div class="shop-progress-bar"><div class="shop-progress-fill" id="shop-progress-fill"></div></div>
+        </div>
+      </div>
+      <div id="shop-items-container"></div>
+    </section>
+
+    <!-- NOTES TAB -->
+    <section id="tab-notes" class="tab-content" style="display:none;">
+      <div class="notes-grid" id="notes-container">
+        <div class="item-skel skel" style="height:80px"></div>
+      </div>
+    </section>
+
+    <!-- STATS TAB -->
+    <section id="tab-stats" class="tab-content" style="display:none;">
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="label">Total trips</div>
+          <div class="value" id="stat-trips">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Lifetime spend</div>
+          <div class="value" id="stat-total"><em>£</em>0</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Avg per trip</div>
+          <div class="value" id="stat-avg"><em>£</em>0</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">This month</div>
+          <div class="value" id="stat-month"><em>£</em>0</div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <h3>Spending <em>per trip</em></h3>
+        <div class="sub">Each shopping trip in order, totalled</div>
+        <div class="chart-canvas-wrap"><canvas id="chart-trips"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>By <em>store</em></h3>
+        <div class="sub">Where the money goes</div>
+        <div class="chart-canvas-wrap"><canvas id="chart-stores"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>By <em>category</em></h3>
+        <div class="sub">What you buy most</div>
+        <div class="chart-canvas-wrap"><canvas id="chart-categories"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Monthly <em>totals</em></h3>
+        <div class="sub">Trends over time</div>
+        <div class="chart-canvas-wrap"><canvas id="chart-monthly"></canvas></div>
+      </div>
+    </section>
+  </main>
+
+  <div class="fab-wrap" id="fab-wrap">
+    <button class="fab" id="fab">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <span id="fab-label">Add item</span>
+    </button>
+  </div>
 </div>
+
+<div class="scrim" id="scrim"></div>
+
+<!-- ADD ITEM SHEET -->
+<div class="sheet" id="sheet-add-item">
+  <div class="sheet-handle"></div>
+  <div class="sheet-head">
+    <div class="sheet-title">Add an <em>item</em></div>
+    <button class="sheet-close" data-close>✕</button>
+  </div>
+  <div class="sheet-body">
+    <div class="field">
+      <label class="field-label">What do you need?</label>
+      <input type="text" id="item-input" placeholder="e.g. Sourdough bread" autocomplete="off" />
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label">Price (optional)</label>
+        <div class="price-input-wrap">
+          <input type="number" id="price-input" placeholder="0.00" min="0" step="0.01" inputmode="decimal" />
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">Qty</label>
+        <input type="number" id="qty-input" placeholder="1" min="0" step="0.5" inputmode="decimal" />
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">Store</label>
+      <div class="store-row">
+        <select id="store-input"></select>
+        <button class="add-store-btn" id="add-store-btn" type="button" title="Add a new store">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">Category</label>
+      <div class="cat-grid" id="cat-grid"></div>
+    </div>
+    <button class="submit-btn" id="add-item-submit">Add to list</button>
+  </div>
+</div>
+
+<!-- ADD STORE SHEET -->
+<div class="sheet" id="sheet-add-store">
+  <div class="sheet-handle"></div>
+  <div class="sheet-head">
+    <div class="sheet-title">New <em>store</em></div>
+    <button class="sheet-close" data-close>✕</button>
+  </div>
+  <div class="sheet-body">
+    <div class="field">
+      <label class="field-label">Store name</label>
+      <input type="text" id="new-store-input" placeholder="e.g. Aldi" autocomplete="off" />
+    </div>
+    <button class="submit-btn" id="add-store-submit">Add store</button>
+  </div>
+</div>
+
+<!-- ADD NOTE SHEET -->
+<div class="sheet" id="sheet-add-note">
+  <div class="sheet-handle"></div>
+  <div class="sheet-head">
+    <div class="sheet-title">Leave a <em>note</em></div>
+    <button class="sheet-close" data-close>✕</button>
+  </div>
+  <div class="sheet-body">
+    <div class="field">
+      <label class="field-label" id="note-to-label">For your partner</label>
+      <textarea id="note-input" placeholder="Write something sweet, or important, or both..."></textarea>
+    </div>
+    <button class="submit-btn" id="add-note-submit">Leave note</button>
+  </div>
+</div>
+
+<!-- FINISH TRIP CONFIRM SHEET -->
+<div class="sheet" id="sheet-confirm-finish">
+  <div class="sheet-handle"></div>
+  <div class="sheet-head">
+    <div class="sheet-title">Finish <em>trip?</em></div>
+    <button class="sheet-close" data-close>✕</button>
+  </div>
+  <div class="confirm-content">
+    <div class="big-num" id="confirm-total">£0.00</div>
+    <div class="sub" id="confirm-sub">0 items will be archived</div>
+    <div class="confirm-actions">
+      <button class="secondary" data-close>Cancel</button>
+      <button class="primary" id="confirm-finish-btn">Finish trip</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS SHEET -->
+<div class="sheet" id="sheet-settings">
+  <div class="sheet-handle"></div>
+  <div class="sheet-head">
+    <div class="sheet-title">Settings</div>
+    <button class="sheet-close" data-close>✕</button>
+  </div>
+  <div class="sheet-body">
+    <div class="settings-row">
+      <span class="settings-label">Signed in as</span>
+      <span class="settings-value" id="settings-email"></span>
+    </div>
+    <div class="settings-row">
+      <span class="settings-label">Status</span>
+      <span class="settings-value" id="settings-status">—</span>
+    </div>
+    <div class="settings-row">
+      <span class="settings-label">Items on list</span>
+      <span class="settings-value" id="settings-itemcount">0</span>
+    </div>
+    <div class="settings-row">
+      <span class="settings-label">Trips logged</span>
+      <span class="settings-value" id="settings-tripcount">0</span>
+    </div>
+    <button class="danger-btn" id="signout-btn">Sign out</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
 
 <script>
-    const SURL = 'https://yurgugvqdnpmbzqepes.supabase.co';
-    const SKEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl1cmd1Z3ZxZG5wcG1ienFlcGVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwNjg3MjUsImV4cCI6MjA5MzY0NDcyNX0.tjX8TmlDS_RJR4BhEN8bkIB8sy-yKpufx8l1UH2Mj-g';
-    const _sb = supabase.createClient(SURL, SKEY);
+// ============================================================================
+// CONFIG — already set up for Marek & Zuzanna's Supabase project
+// ============================================================================
+const CONFIG = {
+  SUPABASE_URL: "https://hbpiflduhhrqpkauoyez.supabase.co",
+  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhicGlmbGR1aGhycXBrYXVveWV6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwNzk3ODIsImV4cCI6MjA5MzY1NTc4Mn0.Z2R1JfTngkH-G6UXDJ09f4G-3r5EnClt219BwZOgvEA",
+  USERS: {
+    marek:   { email: "marek@list.local",   name: "Marek",   color: "sage" },
+    zuzanna: { email: "zuzanna@list.local", name: "Zuzanna", color: "rose" }
+  }
+};
 
-    let shopMode = false;
-    let currentUser = null;
+const CATEGORIES = [
+  { id: "produce",  label: "Produce",  icon: "🥬" },
+  { id: "dairy",    label: "Dairy",    icon: "🧀" },
+  { id: "bakery",   label: "Bakery",   icon: "🥖" },
+  { id: "meat",     label: "Meat",     icon: "🥩" },
+  { id: "pantry",   label: "Pantry",   icon: "🥫" },
+  { id: "frozen",   label: "Frozen",   icon: "🧊" },
+  { id: "drinks",   label: "Drinks",   icon: "🧃" },
+  { id: "snacks",   label: "Snacks",   icon: "🍪" },
+  { id: "household",label: "Household",icon: "🧴" },
+  { id: "personal", label: "Personal", icon: "🧼" },
+  { id: "baby",     label: "Baby",     icon: "🍼" },
+  { id: "other",    label: "Other",    icon: "🛒" }
+];
+const CAT_BY_ID = Object.fromEntries(CATEGORIES.map(c => [c.id, c]));
 
-    async function login() {
-        const e = document.getElementById('email').value;
-        const p = document.getElementById('password').value;
-        const { data, error } = await _sb.auth.signInWithPassword({ email: e, password: p });
-        if(error) {
-            document.getElementById('auth-err').innerText = error.message;
-            document.getElementById('auth-err').style.display = 'block';
-        } else {
-            currentUser = data.user;
-            document.getElementById('auth-box').style.display = 'none';
-            document.getElementById('app').style.display = 'block';
-            start();
-        }
+const state = {
+  user: null,           // { email, name, color }
+  items: [],
+  stores: [],
+  notes: [],
+  trips: [],
+  selectedCategory: "other",
+  selectedStore: "",
+  activeTab: "list",
+  shoppingMode: false,
+  realtimeChannels: [],
+  charts: {}
+};
+
+let supabase = null;
+let supaReady = false;
+
+// ============================================================================
+// Helpers
+// ============================================================================
+const $ = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+const escapeHTML = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+const fmtMoney = n => {
+  if (n == null || n === "" || isNaN(n)) return "—";
+  return "£" + Number(n).toFixed(2);
+};
+const fmtMoneyShort = n => {
+  if (n == null || n === "" || isNaN(n)) return "0.00";
+  return Number(n).toFixed(2);
+};
+const fmtTime = iso => {
+  if (!iso) return "";
+  const d = new Date(iso);
+  const now = new Date();
+  const diffMs = now - d;
+  const diffMin = Math.floor(diffMs / 60000);
+  if (diffMin < 1) return "just now";
+  if (diffMin < 60) return diffMin + "m ago";
+  const diffH = Math.floor(diffMin / 60);
+  if (diffH < 24) return diffH + "h ago";
+  const diffD = Math.floor(diffH / 24);
+  if (diffD < 7) return diffD + "d ago";
+  return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+};
+const greetingFor = (hour) => {
+  if (hour < 5) return "Late night";
+  if (hour < 12) return "Good morning";
+  if (hour < 17) return "Good afternoon";
+  if (hour < 22) return "Good evening";
+  return "Late night";
+};
+const showToast = (msg, ms = 1800) => {
+  const t = $("#toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => t.classList.remove("show"), ms);
+};
+
+// ============================================================================
+// Supabase init
+// ============================================================================
+function initSupabase() {
+  if (!CONFIG.SUPABASE_URL || !CONFIG.SUPABASE_ANON_KEY) {
+    showConfigWarning("Supabase URL or anon key missing in CONFIG block.");
+    return false;
+  }
+  if (typeof window.__createSupabaseClient !== "function") {
+    return false;
+  }
+  supabase = window.__createSupabaseClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY, {
+    auth: { persistSession: true, autoRefreshToken: true }
+  });
+  supaReady = true;
+  return true;
+}
+
+function showConfigWarning(msg) {
+  const el = $("#config-warn");
+  el.style.display = "block";
+  el.innerHTML = `<strong>Setup needed</strong>${msg}`;
+}
+
+// ============================================================================
+// Auth
+// ============================================================================
+let selectedWho = null;
+
+function bindLogin() {
+  $$("#who-pick .who-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      selectedWho = btn.dataset.who;
+      $$("#who-pick .who-btn").forEach(b => b.classList.toggle("active", b === btn));
+      $("#login-btn").disabled = !$("#login-password").value;
+      $("#login-password").focus();
+    });
+  });
+  $("#login-password").addEventListener("input", e => {
+    $("#login-btn").disabled = !selectedWho || !e.target.value;
+  });
+  $("#login-password").addEventListener("keydown", e => {
+    if (e.key === "Enter" && selectedWho && e.target.value) doLogin();
+  });
+  $("#login-btn").addEventListener("click", doLogin);
+}
+
+async function doLogin() {
+  if (!selectedWho) return;
+  const profile = CONFIG.USERS[selectedWho];
+  const password = $("#login-password").value;
+  $("#login-error").textContent = "";
+  $("#login-btn").disabled = true;
+  $("#login-btn").textContent = "Signing in…";
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: profile.email,
+      password: password
+    });
+    if (error) throw error;
+    state.user = { email: profile.email, name: profile.name, color: profile.color };
+    $("#login-password").value = "";
+    enterApp();
+  } catch (err) {
+    $("#login-error").textContent = err.message || "Sign in failed";
+    $("#login-btn").disabled = false;
+    $("#login-btn").textContent = "Sign in";
+  }
+}
+
+async function checkExistingSession() {
+  if (!supaReady) return false;
+  const { data } = await supabase.auth.getSession();
+  if (data?.session?.user) {
+    const email = data.session.user.email;
+    const profileEntry = Object.values(CONFIG.USERS).find(u => u.email.toLowerCase() === email.toLowerCase());
+    if (profileEntry) {
+      state.user = { email: profileEntry.email, name: profileEntry.name, color: profileEntry.color };
+      enterApp();
+      return true;
     }
+  }
+  return false;
+}
 
-    async function start() {
-        refreshItems();
-        refreshNotes();
-        refreshHistory();
-        _sb.channel('updates').on('postgres_changes',{event:'*',schema:'public',table:'items'},()=>refreshItems()).subscribe();
-        _sb.channel('notes').on('postgres_changes',{event:'*',schema:'public',table:'notes'},()=>refreshNotes()).subscribe();
-    }
+async function signOut() {
+  try { await supabase.auth.signOut(); } catch(e){}
+  cleanupRealtime();
+  state.user = null;
+  state.items = []; state.notes = []; state.trips = []; state.stores = [];
+  $("#app").classList.remove("active");
+  $("#login").style.display = "";
+  closeSheets();
+  selectedWho = null;
+  $$("#who-pick .who-btn").forEach(b => b.classList.remove("active"));
+}
 
-    async function addItem() {
-        const name = document.getElementById('new-item').value;
-        const price = document.getElementById('new-price').value || 0;
-        const shop = document.getElementById('new-shop').value;
-        if(!name) return;
-        await _sb.from('items').insert([{ name, price, shop }]);
-        document.getElementById('new-item').value = '';
-    }
+// ============================================================================
+// App entry
+// ============================================================================
+async function enterApp() {
+  $("#login").style.display = "none";
+  $("#app").classList.add("active");
 
-    async function refreshItems() {
-        const { data } = await _sb.from('items').select('*').order('created_at', {ascending: false});
-        const container = document.getElementById('items-list');
-        container.innerHTML = data.map(i => `
-            <div class="item-row">
-                <input type="checkbox" class="checkbox" ${i.is_purchased?'checked':''} onclick="updateItem(${i.id},${i.is_purchased})">
-                <div class="item-info">
-                    <span style="${i.is_purchased?'text-decoration:line-through;color:#ccc':'font-weight:500'}">${i.name}</span>
-                    <div style="font-size:0.75rem; color:#aaa; margin-top:2px;">£${i.price} • ${i.shop}</div>
-                </div>
-            </div>
-        `).join('');
-        if(shopMode) updateLiveTotal();
-    }
+  const hr = new Date().getHours();
+  $("#greet-hi").textContent = greetingFor(hr);
+  $("#greet-name").innerHTML = `Hello, <em>${escapeHTML(state.user.name)}</em>`;
+  $("#settings-email").textContent = state.user.email;
 
-    async function updateItem(id, status) {
-        await _sb.from('items').update({is_purchased: !status}).eq('id', id);
-    }
+  const avatar = $("#avatar");
+  avatar.className = "avatar " + (state.user.name.toLowerCase() === "zuzanna" ? "zuzanna" : "marek");
+  avatar.textContent = state.user.name[0];
 
-    function toggleShop() {
-        shopMode = !shopMode;
-        document.body.classList.toggle('shopping-active');
-        document.getElementById('shop-footer').style.display = shopMode ? 'flex' : 'none';
-        updateLiveTotal();
-    }
+  await Promise.all([loadItems(), loadStores(), loadNotes(), loadTrips()]);
+  renderAll();
+  setupRealtime();
+}
 
-    async function updateLiveTotal() {
-        const { data } = await _sb.from('items').select('price').eq('is_purchased', true);
-        const total = data.reduce((acc, curr) => acc + parseFloat(curr.price), 0);
-        document.getElementById('live-total').innerText = `£${total.toFixed(2)}`;
-    }
+// ============================================================================
+// Data loading
+// ============================================================================
+async function loadItems() {
+  const { data, error } = await supabase.from("items").select("*").order("added_at", { ascending: false });
+  if (error) { console.error(error); return; }
+  state.items = data || [];
+}
+async function loadStores() {
+  const { data, error } = await supabase.from("stores").select("*").order("name");
+  if (error) { console.error(error); return; }
+  state.stores = data || [];
+}
+async function loadNotes() {
+  const { data, error } = await supabase.from("notes").select("*").order("created_at", { ascending: false });
+  if (error) { console.error(error); return; }
+  state.notes = data || [];
+}
+async function loadTrips() {
+  const { data, error } = await supabase
+    .from("trips")
+    .select("*, trip_items(*)")
+    .order("finished_at", { ascending: true });
+  if (error) { console.error(error); return; }
+  state.trips = data || [];
+}
 
-    async function finishShop() {
-        const { data: checked } = await _sb.from('items').select('*').eq('is_purchased', true);
-        if(checked.length === 0) return toggleShop();
-        const total = checked.reduce((acc, curr) => acc + parseFloat(curr.price), 0);
-        await _sb.from('shopping_history').insert([{ total_spent: total, items_count: checked.length }]);
-        await _sb.from('items').delete().eq('is_purchased', true);
-        toggleShop();
-        refreshHistory();
-    }
+// ============================================================================
+// Realtime
+// ============================================================================
+function setupRealtime() {
+  cleanupRealtime();
+  $("#sync-text").textContent = "Live syncing";
+  $("#sync-pulse").classList.remove("offline");
+  const channel = supabase
+    .channel("shopping-list-realtime")
+    .on("postgres_changes", { event: "*", schema: "public", table: "items" }, async () => { await loadItems(); renderAll(); })
+    .on("postgres_changes", { event: "*", schema: "public", table: "notes" }, async () => { await loadNotes(); renderNotes(); renderCounts(); })
+    .on("postgres_changes", { event: "*", schema: "public", table: "stores" }, async () => { await loadStores(); renderStoreOptions(); })
+    .on("postgres_changes", { event: "*", schema: "public", table: "trips" }, async () => { await loadTrips(); renderStats(); renderSettings(); })
+    .subscribe(status => {
+      if (status === "SUBSCRIBED") {
+        $("#sync-text").textContent = "Live syncing";
+        $("#sync-pulse").classList.remove("offline");
+      } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+        $("#sync-text").textContent = "Reconnecting…";
+        $("#sync-pulse").classList.add("offline");
+      }
+    });
+  state.realtimeChannels.push(channel);
+}
+function cleanupRealtime() {
+  for (const ch of state.realtimeChannels) { try { supabase.removeChannel(ch); } catch(e){} }
+  state.realtimeChannels = [];
+}
 
-    async function addNote() {
-        const content = document.getElementById('new-note').value;
-        if(!content) return;
-        const author = currentUser.email.toLowerCase().includes('marek') ? 'Marek' : 'Zuzanna';
-        await _sb.from('notes').insert([{ content, author }]);
-        document.getElementById('new-note').value = '';
-    }
+// ============================================================================
+// Rendering
+// ============================================================================
+function renderAll() {
+  renderList();
+  renderShop();
+  renderNotes();
+  renderStats();
+  renderCounts();
+  renderStoreOptions();
+  renderSettings();
+}
 
-    async function refreshNotes() {
-        const { data } = await _sb.from('notes').select('*').order('created_at', {ascending: false}).limit(5);
-        document.getElementById('notes-list').innerHTML = data.map(n => `
-            <div class="note-bubble"><div class="note-meta">${n.author}</div>${n.content}</div>
-        `).join('');
-    }
+function renderCounts() {
+  const open = state.items.filter(i => !i.checked).length;
+  $("#tab-list-count").textContent = open;
+  $("#tab-notes-count").textContent = state.notes.length;
+}
 
-    async function refreshHistory() {
-        const { data } = await _sb.from('shopping_history').select('*').order('created_at', {ascending: true}).limit(10);
-        if(!data.length) return;
-        const ctx = document.getElementById('historyChart').getContext('2d');
-        if(window.myChart) window.myChart.destroy();
-        window.myChart = new Chart(ctx, {
-            type:'line',
-            data:{
-                labels: data.map(d => new Date(d.created_at).toLocaleDateString()),
-                datasets:[{ data: data.map(d=>d.total_spent), borderColor:'#d98c72', tension:0.4, fill:false }]
-            },
-            options:{ plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true } } }
-        });
+function renderSettings() {
+  $("#settings-itemcount").textContent = state.items.length;
+  $("#settings-tripcount").textContent = state.trips.length;
+}
+
+function renderList() {
+  const container = $("#items-container");
+  const items = state.items;
+
+  $("#prog-count").textContent = items.length;
+  const withPrice = items.filter(i => i.price != null && i.price !== "");
+  $("#prog-with-price").textContent = withPrice.length;
+  const est = withPrice.reduce((s, i) => s + Number(i.price || 0) * Number(i.qty || 1), 0);
+  $("#prog-est").textContent = fmtMoney(est);
+
+  if (items.length === 0) {
+    container.innerHTML = `
+      <div class="empty">
+        <div class="emo">🛍️</div>
+        <h3>Your list is empty</h3>
+        <p>Tap "Add item" to get started.</p>
+      </div>`;
+    return;
+  }
+
+  // Group by category
+  const groups = {};
+  for (const it of items) {
+    const cid = CAT_BY_ID[it.category] ? it.category : "other";
+    (groups[cid] ||= []).push(it);
+  }
+
+  const html = [];
+  for (const cat of CATEGORIES) {
+    const arr = groups[cat.id];
+    if (!arr || arr.length === 0) continue;
+    arr.sort((a,b) => (b.added_at || "").localeCompare(a.added_at || ""));
+    html.push(`
+      <div class="category">
+        <div class="category-head">
+          <span class="icon">${cat.icon}</span>
+          <span>${cat.label}</span>
+          <span class="count">${arr.length}</span>
+        </div>
+        <div class="items">${arr.map(itemHTML).join("")}</div>
+      </div>`);
+  }
+  container.innerHTML = html.join("");
+}
+
+function itemHTML(it) {
+  const meta = [];
+  if (it.price != null && it.price !== "") meta.push(`<span class="price">${fmtMoney(it.price)}</span>`);
+  if (it.qty) {
+    if (meta.length) meta.push(`<span class="dot"></span>`);
+    meta.push(`<span class="qty">${escapeHTML(it.qty)}${it.unit ? " " + escapeHTML(it.unit) : ""}</span>`);
+  }
+  if (it.store) {
+    if (meta.length) meta.push(`<span class="dot"></span>`);
+    meta.push(`<span class="store-tag">${escapeHTML(it.store)}</span>`);
+  }
+  if (it.added_by) {
+    if (meta.length) meta.push(`<span class="dot"></span>`);
+    meta.push(`<span>${escapeHTML(it.added_by)}</span>`);
+  }
+  return `
+    <div class="item" data-id="${escapeHTML(it.id)}">
+      <div class="item-body">
+        <div class="item-name">${escapeHTML(it.name)}</div>
+        ${meta.length ? `<div class="item-meta">${meta.join("")}</div>` : ""}
+      </div>
+      <button class="item-delete" data-delete aria-label="Delete">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>
+      </button>
+    </div>`;
+}
+
+function renderShop() {
+  const container = $("#shop-items-container");
+  const items = state.items;
+
+  // Total = sum of CHECKED items
+  const checked = items.filter(i => i.checked);
+  const checkedTotal = checked.reduce((s, i) => s + Number(i.price || 0) * Number(i.qty || 1), 0);
+  $("#shop-total-num").textContent = fmtMoneyShort(checkedTotal);
+  $("#shop-progress-text").textContent = `${checked.length} / ${items.length}`;
+  const pct = items.length === 0 ? 0 : (checked.length / items.length) * 100;
+  $("#shop-progress-fill").style.width = pct + "%";
+
+  if (items.length === 0) {
+    container.innerHTML = `
+      <div class="empty">
+        <div class="emo">🛒</div>
+        <h3>No items to shop</h3>
+        <p>Add some things to your list first.</p>
+      </div>`;
+    return;
+  }
+
+  // Group by store
+  const groups = {};
+  for (const it of items) {
+    const key = it.store || "Anywhere";
+    (groups[key] ||= []).push(it);
+  }
+
+  const sortedStores = Object.keys(groups).sort((a,b) => {
+    if (a === "Anywhere") return 1;
+    if (b === "Anywhere") return -1;
+    return a.localeCompare(b);
+  });
+
+  const html = [];
+  for (const store of sortedStores) {
+    const arr = groups[store];
+    arr.sort((a,b) => Number(a.checked) - Number(b.checked) || a.name.localeCompare(b.name));
+    const storeTotal = arr
+      .filter(i => i.checked)
+      .reduce((s, i) => s + Number(i.price || 0) * Number(i.qty || 1), 0);
+    html.push(`
+      <div class="shop-store-group">
+        <div class="shop-store-head">
+          <span>${escapeHTML(store)}</span>
+          <span class="store-total">${fmtMoney(storeTotal)}</span>
+        </div>
+        ${arr.map(shopItemHTML).join("")}
+      </div>`);
+  }
+  container.innerHTML = html.join("");
+}
+
+function shopItemHTML(it) {
+  const lineTotal = (it.price != null && it.price !== "") ? Number(it.price) * Number(it.qty || 1) : null;
+  const priceHtml = lineTotal != null
+    ? `<div class="shop-item-price">${fmtMoney(lineTotal)}</div>`
+    : `<div class="shop-item-price no-price">no price</div>`;
+  const meta = [];
+  if (it.qty) meta.push(`${escapeHTML(it.qty)}${it.unit ? " " + escapeHTML(it.unit) : ""}`);
+  if (it.category && CAT_BY_ID[it.category]) meta.push(CAT_BY_ID[it.category].label);
+  return `
+    <div class="shop-item ${it.checked ? "checked" : ""}" data-id="${escapeHTML(it.id)}" data-shop-toggle>
+      <div class="shop-checkbox">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="shop-item-body">
+        <div class="shop-item-name">${escapeHTML(it.name)}</div>
+        ${meta.length ? `<div class="shop-item-meta">${meta.join(" · ")}</div>` : ""}
+      </div>
+      ${priceHtml}
+    </div>`;
+}
+
+function renderNotes() {
+  const container = $("#notes-container");
+  if (state.notes.length === 0) {
+    container.innerHTML = `
+      <div class="empty">
+        <div class="emo">💌</div>
+        <h3>No notes yet</h3>
+        <p>Leave each other little messages here.</p>
+      </div>`;
+    return;
+  }
+  container.innerHTML = state.notes.map(n => {
+    const cls = (n.author || "").toLowerCase() === "zuzanna" ? "from-zuzanna" : "from-marek";
+    return `
+      <div class="note ${cls}" data-id="${escapeHTML(n.id)}">
+        <div class="note-head">
+          <div class="note-author"><span class="from">from</span> <strong>${escapeHTML(n.author||"")}</strong></div>
+          <div class="note-time">${escapeHTML(fmtTime(n.created_at))}</div>
+        </div>
+        <div class="note-body">${escapeHTML(n.text)}</div>
+        <button class="note-delete" data-delete-note aria-label="Delete note">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>`;
+  }).join("");
+}
+
+function renderStoreOptions() {
+  const sel = $("#store-input");
+  const current = sel.value;
+  sel.innerHTML = `<option value="">— pick one —</option>` +
+    state.stores.map(s => `<option value="${escapeHTML(s.name)}">${escapeHTML(s.name)}</option>`).join("");
+  if (current && state.stores.find(s => s.name === current)) sel.value = current;
+}
+
+// ============================================================================
+// Stats / Charts
+// ============================================================================
+function renderStats() {
+  const trips = state.trips;
+  $("#stat-trips").textContent = trips.length;
+  const total = trips.reduce((s, t) => s + Number(t.total || 0), 0);
+  $("#stat-total").innerHTML = `<em>£</em>${total.toFixed(2)}`;
+  const avg = trips.length ? total / trips.length : 0;
+  $("#stat-avg").innerHTML = `<em>£</em>${avg.toFixed(2)}`;
+  const now = new Date();
+  const monthTotal = trips
+    .filter(t => {
+      const d = new Date(t.finished_at);
+      return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+    })
+    .reduce((s, t) => s + Number(t.total || 0), 0);
+  $("#stat-month").innerHTML = `<em>£</em>${monthTotal.toFixed(2)}`;
+
+  if (typeof Chart === "undefined") return;
+  drawTripsChart();
+  drawStoresChart();
+  drawCategoriesChart();
+  drawMonthlyChart();
+}
+
+const chartColors = ["#d97757", "#6b8e6f", "#c97b86", "#c9a961", "#5b7c99", "#a87b9c", "#7fa382", "#d99757"];
+
+function drawChart(id, type, data, options) {
+  const ctx = $("#" + id);
+  if (!ctx) return;
+  if (state.charts[id]) state.charts[id].destroy();
+  state.charts[id] = new Chart(ctx, { type, data, options: { ...options, responsive: true, maintainAspectRatio: false } });
+}
+
+function drawTripsChart() {
+  const trips = state.trips;
+  if (trips.length === 0) {
+    drawEmptyChart("chart-trips", "No trips yet");
+    return;
+  }
+  const labels = trips.map(t => new Date(t.finished_at).toLocaleDateString(undefined, {month:"short", day:"numeric"}));
+  const data = trips.map(t => Number(t.total || 0));
+  drawChart("chart-trips", "line", {
+    labels,
+    datasets: [{
+      data,
+      borderColor: "#d97757",
+      backgroundColor: "rgba(217,119,87,0.1)",
+      borderWidth: 2.5,
+      pointRadius: 4,
+      pointBackgroundColor: "#d97757",
+      pointHoverRadius: 6,
+      tension: 0.3,
+      fill: true
+    }]
+  }, {
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { beginAtZero: true, ticks: { callback: v => "£" + v }, grid: { color: "rgba(0,0,0,0.05)" } },
+      x: { grid: { display: false } }
     }
+  });
+}
+
+function drawStoresChart() {
+  const totals = {};
+  for (const trip of state.trips) {
+    if (trip.store_summary && typeof trip.store_summary === "object") {
+      for (const [store, amt] of Object.entries(trip.store_summary)) {
+        totals[store] = (totals[store] || 0) + Number(amt || 0);
+      }
+    }
+  }
+  const entries = Object.entries(totals).filter(([_,v]) => v > 0).sort((a,b) => b[1]-a[1]);
+  if (entries.length === 0) {
+    drawEmptyChart("chart-stores", "No store data yet");
+    return;
+  }
+  drawChart("chart-stores", "bar", {
+    labels: entries.map(e => e[0]),
+    datasets: [{
+      data: entries.map(e => e[1]),
+      backgroundColor: entries.map((_,i) => chartColors[i % chartColors.length]),
+      borderRadius: 8,
+      borderSkipped: false
+    }]
+  }, {
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { beginAtZero: true, ticks: { callback: v => "£" + v }, grid: { color: "rgba(0,0,0,0.05)" } },
+      x: { grid: { display: false } }
+    }
+  });
+}
+
+function drawCategoriesChart() {
+  const totals = {};
+  for (const trip of state.trips) {
+    for (const ti of (trip.trip_items || [])) {
+      const cat = ti.category || "other";
+      const amt = Number(ti.price || 0) * Number(ti.qty || 1);
+      totals[cat] = (totals[cat] || 0) + amt;
+    }
+  }
+  const entries = Object.entries(totals).filter(([_,v]) => v > 0).sort((a,b) => b[1]-a[1]);
+  if (entries.length === 0) {
+    drawEmptyChart("chart-categories", "No category data yet");
+    return;
+  }
+  drawChart("chart-categories", "doughnut", {
+    labels: entries.map(e => CAT_BY_ID[e[0]] ? CAT_BY_ID[e[0]].label : e[0]),
+    datasets: [{
+      data: entries.map(e => e[1]),
+      backgroundColor: entries.map((_,i) => chartColors[i % chartColors.length]),
+      borderWidth: 2,
+      borderColor: "#fff"
+    }]
+  }, {
+    plugins: {
+      legend: {
+        position: "bottom",
+        labels: { boxWidth: 10, padding: 12, font: { size: 11 } }
+      },
+      tooltip: { callbacks: { label: ctx => `${ctx.label}: £${ctx.parsed.toFixed(2)}` } }
+    },
+    cutout: "62%"
+  });
+}
+
+function drawMonthlyChart() {
+  const totals = {};
+  for (const t of state.trips) {
+    const d = new Date(t.finished_at);
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`;
+    totals[key] = (totals[key] || 0) + Number(t.total || 0);
+  }
+  const entries = Object.entries(totals).sort((a,b) => a[0].localeCompare(b[0]));
+  if (entries.length === 0) {
+    drawEmptyChart("chart-monthly", "No data yet");
+    return;
+  }
+  drawChart("chart-monthly", "bar", {
+    labels: entries.map(([k]) => {
+      const [y,m] = k.split("-");
+      return new Date(Number(y), Number(m)-1, 1).toLocaleDateString(undefined, {month:"short", year:"2-digit"});
+    }),
+    datasets: [{
+      data: entries.map(e => e[1]),
+      backgroundColor: "#6b8e6f",
+      borderRadius: 8,
+      borderSkipped: false
+    }]
+  }, {
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { beginAtZero: true, ticks: { callback: v => "£" + v }, grid: { color: "rgba(0,0,0,0.05)" } },
+      x: { grid: { display: false } }
+    }
+  });
+}
+
+function drawEmptyChart(id, msg) {
+  const ctx = $("#" + id);
+  if (!ctx) return;
+  if (state.charts[id]) { state.charts[id].destroy(); delete state.charts[id]; }
+  const c = ctx.getContext("2d");
+  c.clearRect(0, 0, ctx.width, ctx.height);
+  c.fillStyle = "#9c9b94";
+  c.font = "italic 14px Fraunces, serif";
+  c.textAlign = "center";
+  c.textBaseline = "middle";
+  c.fillText(msg, ctx.width / 2, ctx.height / 2);
+}
+
+// ============================================================================
+// Events / Tabs
+// ============================================================================
+function bindEvents() {
+  $$(".tab").forEach(t => t.addEventListener("click", () => switchTab(t.dataset.tab)));
+
+  $("#fab").addEventListener("click", () => {
+    if (state.activeTab === "shop") {
+      finishTripPrompt();
+    } else if (state.activeTab === "notes") {
+      openSheet("sheet-add-note");
+    } else if (state.activeTab === "stats") {
+      openSheet("sheet-add-item");
+    } else {
+      openSheet("sheet-add-item");
+    }
+  });
+
+  $("#enter-shop-mode").addEventListener("click", () => switchTab("shop"));
+  $("#exit-shop").addEventListener("click", () => switchTab("list"));
+
+  $("#settings-btn").addEventListener("click", () => openSheet("sheet-settings"));
+  $("#avatar").addEventListener("click", () => openSheet("sheet-settings"));
+  $("#signout-btn").addEventListener("click", signOut);
+
+  document.addEventListener("click", (e) => {
+    if (e.target.matches("[data-close]") || e.target === $("#scrim")) closeSheets();
+  });
+
+  $("#items-container").addEventListener("click", (e) => {
+    const itemEl = e.target.closest(".item");
+    if (!itemEl) return;
+    if (e.target.closest("[data-delete]")) deleteItem(itemEl.dataset.id);
+  });
+
+  $("#shop-items-container").addEventListener("click", (e) => {
+    const itemEl = e.target.closest("[data-shop-toggle]");
+    if (!itemEl) return;
+    toggleShopItem(itemEl.dataset.id);
+  });
+
+  $("#notes-container").addEventListener("click", (e) => {
+    if (!e.target.closest("[data-delete-note]")) return;
+    const noteEl = e.target.closest(".note");
+    if (!noteEl) return;
+    deleteNote(noteEl.dataset.id);
+  });
+
+  $("#add-item-submit").addEventListener("click", submitAddItem);
+  $("#item-input").addEventListener("keydown", e => { if (e.key === "Enter") submitAddItem(); });
+  $("#add-note-submit").addEventListener("click", submitAddNote);
+
+  $("#add-store-btn").addEventListener("click", () => openSheet("sheet-add-store"));
+  $("#add-store-submit").addEventListener("click", submitAddStore);
+  $("#new-store-input").addEventListener("keydown", e => { if (e.key === "Enter") submitAddStore(); });
+
+  $("#confirm-finish-btn").addEventListener("click", finishTrip);
+
+  // Build category picker
+  const grid = $("#cat-grid");
+  grid.innerHTML = CATEGORIES.map(c => `
+    <button class="cat-pick ${c.id === state.selectedCategory ? "active":""}" data-cat="${c.id}">
+      <span class="ic">${c.icon}</span>
+      <span>${c.label}</span>
+    </button>`).join("");
+  grid.addEventListener("click", e => {
+    const b = e.target.closest(".cat-pick");
+    if (!b) return;
+    state.selectedCategory = b.dataset.cat;
+    $$(".cat-pick", grid).forEach(x => x.classList.toggle("active", x === b));
+  });
+}
+
+function switchTab(tab) {
+  state.activeTab = tab;
+  $$(".tab").forEach(x => x.classList.toggle("active", x.dataset.tab === tab));
+  $$(".tab-content").forEach(c => c.style.display = "none");
+  $("#tab-" + tab).style.display = "";
+  state.shoppingMode = (tab === "shop");
+  $("#app").classList.toggle("shopping-mode", state.shoppingMode);
+
+  // Update FAB based on tab
+  if (tab === "shop") {
+    $("#fab").classList.add("finish-trip");
+    $("#fab-label").textContent = "Finish trip";
+    const checked = state.items.filter(i => i.checked).length;
+    $("#fab").disabled = checked === 0;
+    $("#fab svg").outerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  } else if (tab === "stats") {
+    $("#fab-wrap").style.display = "none";
+  } else if (tab === "notes") {
+    $("#fab").classList.remove("finish-trip");
+    $("#fab-label").textContent = "Add note";
+    $("#fab").disabled = false;
+    $("#fab svg").outerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+  } else {
+    $("#fab").classList.remove("finish-trip");
+    $("#fab-label").textContent = "Add item";
+    $("#fab").disabled = false;
+    $("#fab svg").outerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+  }
+  if (tab !== "stats") $("#fab-wrap").style.display = "";
+
+  if (tab === "stats") renderStats();
+}
+
+// ============================================================================
+// Sheet helpers
+// ============================================================================
+function openSheet(id) {
+  closeSheets();
+  $("#scrim").classList.add("active");
+  $("#" + id).classList.add("active");
+  if (id === "sheet-add-item") setTimeout(() => $("#item-input").focus(), 280);
+  if (id === "sheet-add-note") {
+    const partner = state.user.name === "Marek" ? "Zuzanna" : "Marek";
+    $("#note-to-label").textContent = `For ${partner}`;
+    setTimeout(() => $("#note-input").focus(), 280);
+  }
+  if (id === "sheet-add-store") setTimeout(() => $("#new-store-input").focus(), 280);
+}
+function closeSheets() {
+  $("#scrim").classList.remove("active");
+  $$(".sheet").forEach(s => s.classList.remove("active"));
+}
+
+// ============================================================================
+// Mutations
+// ============================================================================
+async function submitAddItem() {
+  const name = $("#item-input").value.trim();
+  if (!name) { $("#item-input").focus(); return; }
+  const priceStr = $("#price-input").value;
+  const price = priceStr ? parseFloat(priceStr) : null;
+  const qtyStr = $("#qty-input").value;
+  const qty = qtyStr ? parseFloat(qtyStr) : null;
+  const store = $("#store-input").value || null;
+  const category = state.selectedCategory || "other";
+
+  const item = {
+    name, price, store, category, qty,
+    checked: false,
+    added_by: state.user.name,
+    added_at: new Date().toISOString()
+  };
+
+  // Optimistic insert
+  const tempId = "tmp_" + Date.now();
+  state.items.unshift({ ...item, id: tempId });
+  renderAll();
+
+  // Reset form
+  $("#item-input").value = "";
+  $("#price-input").value = "";
+  $("#qty-input").value = "";
+  $("#store-input").value = "";
+  state.selectedCategory = "other";
+  $$(".cat-pick").forEach(x => x.classList.toggle("active", x.dataset.cat === "other"));
+  closeSheets();
+
+  const { data, error } = await supabase.from("items").insert(item).select().single();
+  if (error) {
+    console.error(error);
+    state.items = state.items.filter(i => i.id !== tempId);
+    renderAll();
+    showToast("Couldn't add: " + (error.message || "error"));
+    return;
+  }
+  // Replace temp with real
+  const idx = state.items.findIndex(i => i.id === tempId);
+  if (idx >= 0) state.items[idx] = data;
+  renderAll();
+  showToast("Added");
+}
+
+async function deleteItem(id) {
+  const idx = state.items.findIndex(i => i.id === id);
+  if (idx < 0) return;
+  const removed = state.items.splice(idx, 1)[0];
+  renderAll();
+  const { error } = await supabase.from("items").delete().eq("id", id);
+  if (error) {
+    console.error(error);
+    state.items.splice(idx, 0, removed);
+    renderAll();
+    showToast("Couldn't delete");
+  }
+}
+
+async function toggleShopItem(id) {
+  const it = state.items.find(x => x.id === id);
+  if (!it) return;
+  const nowChecked = !it.checked;
+  it.checked = nowChecked;
+  it.checked_at = nowChecked ? new Date().toISOString() : null;
+  it.checked_by = nowChecked ? state.user.name : null;
+  renderShop();
+  // Update fab disabled state
+  if (state.activeTab === "shop") {
+    const checkedCount = state.items.filter(i => i.checked).length;
+    $("#fab").disabled = checkedCount === 0;
+  }
+  const { error } = await supabase.from("items").update({
+    checked: nowChecked,
+    checked_at: it.checked_at,
+    checked_by: it.checked_by
+  }).eq("id", id);
+  if (error) {
+    console.error(error);
+    showToast("Couldn't update");
+    it.checked = !nowChecked;
+    renderShop();
+  }
+}
+
+async function submitAddNote() {
+  const text = $("#note-input").value.trim();
+  if (!text) return;
+  const note = {
+    text,
+    author: state.user.name,
+    created_at: new Date().toISOString()
+  };
+  const tempId = "tmp_" + Date.now();
+  state.notes.unshift({ ...note, id: tempId });
+  renderNotes(); renderCounts();
+  $("#note-input").value = "";
+  closeSheets();
+  const { data, error } = await supabase.from("notes").insert(note).select().single();
+  if (error) {
+    console.error(error);
+    state.notes = state.notes.filter(n => n.id !== tempId);
+    renderNotes(); renderCounts();
+    showToast("Couldn't save note");
+    return;
+  }
+  const idx = state.notes.findIndex(n => n.id === tempId);
+  if (idx >= 0) state.notes[idx] = data;
+  renderNotes();
+  showToast("Note left");
+}
+
+async function deleteNote(id) {
+  const idx = state.notes.findIndex(n => n.id === id);
+  if (idx < 0) return;
+  const removed = state.notes.splice(idx, 1)[0];
+  renderNotes(); renderCounts();
+  const { error } = await supabase.from("notes").delete().eq("id", id);
+  if (error) {
+    state.notes.splice(idx, 0, removed);
+    renderNotes(); renderCounts();
+    showToast("Couldn't delete");
+  }
+}
+
+async function submitAddStore() {
+  const name = $("#new-store-input").value.trim();
+  if (!name) return;
+  if (state.stores.find(s => s.name.toLowerCase() === name.toLowerCase())) {
+    showToast("Store already exists");
+    closeSheets();
+    return;
+  }
+  const { data, error } = await supabase.from("stores").insert({ name }).select().single();
+  if (error) {
+    console.error(error);
+    showToast("Couldn't add store");
+    return;
+  }
+  state.stores.push(data);
+  state.stores.sort((a,b) => a.name.localeCompare(b.name));
+  renderStoreOptions();
+  $("#store-input").value = name;
+  $("#new-store-input").value = "";
+  closeSheets();
+  setTimeout(() => openSheet("sheet-add-item"), 100);
+  showToast(`Added ${name}`);
+}
+
+function finishTripPrompt() {
+  const checked = state.items.filter(i => i.checked);
+  if (checked.length === 0) {
+    showToast("Tick some items first");
+    return;
+  }
+  const total = checked.reduce((s, i) => s + Number(i.price || 0) * Number(i.qty || 1), 0);
+  $("#confirm-total").textContent = fmtMoney(total);
+  $("#confirm-sub").textContent = `${checked.length} item${checked.length === 1 ? "" : "s"} will be archived`;
+  openSheet("sheet-confirm-finish");
+}
+
+async function finishTrip() {
+  const checked = state.items.filter(i => i.checked);
+  if (checked.length === 0) { closeSheets(); return; }
+
+  const total = checked.reduce((s, i) => s + Number(i.price || 0) * Number(i.qty || 1), 0);
+  const storeSummary = {};
+  for (const it of checked) {
+    const key = it.store || "Anywhere";
+    storeSummary[key] = (storeSummary[key] || 0) + Number(it.price || 0) * Number(it.qty || 1);
+  }
+  // Round store totals
+  for (const k in storeSummary) storeSummary[k] = Math.round(storeSummary[k] * 100) / 100;
+
+  closeSheets();
+  $("#fab").disabled = true;
+
+  // 1) Create trip
+  const { data: trip, error: tripErr } = await supabase
+    .from("trips")
+    .insert({
+      finished_by: state.user.name,
+      total: Math.round(total * 100) / 100,
+      item_count: checked.length,
+      store_summary: storeSummary
+    })
+    .select()
+    .single();
+
+  if (tripErr) {
+    console.error(tripErr);
+    showToast("Couldn't save trip");
+    $("#fab").disabled = false;
+    return;
+  }
+
+  // 2) Insert trip_items snapshots
+  const tripItemRows = checked.map(it => ({
+    trip_id: trip.id,
+    name: it.name,
+    price: it.price,
+    store: it.store,
+    category: it.category,
+    qty: it.qty,
+    unit: it.unit,
+    bought_at: it.checked_at || new Date().toISOString()
+  }));
+  if (tripItemRows.length > 0) {
+    const { error: tiErr } = await supabase.from("trip_items").insert(tripItemRows);
+    if (tiErr) console.error("trip_items insert error:", tiErr);
+  }
+
+  // 3) Delete checked items
+  const idsToDelete = checked.map(i => i.id);
+  const { error: delErr } = await supabase.from("items").delete().in("id", idsToDelete);
+  if (delErr) console.error("delete checked error:", delErr);
+
+  // Update local state
+  state.items = state.items.filter(i => !i.checked);
+  await loadTrips();
+  renderAll();
+
+  showToast(`Trip done — ${fmtMoney(total)} 🎉`, 2400);
+  switchTab("list");
+}
+
+// ============================================================================
+// Boot
+// ============================================================================
+function boot() {
+  bindLogin();
+  bindEvents();
+
+  if (initSupabase()) {
+    checkExistingSession();
+  } else {
+    // Wait for the supabase module to load
+    window.addEventListener("supabase-ready", () => {
+      if (initSupabase()) checkExistingSession();
+    }, { once: true });
+  }
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", boot);
+} else {
+  boot();
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden && state.user && supabase) {
+    // Refresh data when returning to the app
+    Promise.all([loadItems(), loadNotes(), loadTrips(), loadStores()]).then(renderAll);
+  }
+});
 </script>
 </body>
 </html>
