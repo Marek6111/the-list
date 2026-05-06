@@ -1077,6 +1077,53 @@
     font-size: 14px;
   }
 
+  /* Discount toggle */
+  .discount-row { display: flex; flex-direction: column; gap: 6px; }
+  .discount-toggle-label {
+    display: flex; align-items: center; gap: 10px;
+    cursor: pointer;
+    padding: 12px 14px;
+    background: var(--bg-soft);
+    border-radius: var(--radius);
+    border: 1.5px solid transparent;
+    transition: all 0.15s;
+  }
+  .discount-toggle-label:has(input:checked) {
+    background: #fff8e6;
+    border-color: var(--gold);
+  }
+  .discount-toggle-label input[type="checkbox"] { display: none; }
+  .discount-toggle-ui {
+    width: 36px; height: 20px;
+    background: var(--line);
+    border-radius: 999px;
+    flex-shrink: 0;
+    position: relative;
+    transition: background 0.2s;
+  }
+  .discount-toggle-ui::after {
+    content: '';
+    position: absolute;
+    width: 16px; height: 16px;
+    background: white;
+    border-radius: 50%;
+    top: 2px; left: 2px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    transition: transform 0.2s;
+  }
+  .discount-toggle-label:has(input:checked) .discount-toggle-ui { background: var(--gold); }
+  .discount-toggle-label:has(input:checked) .discount-toggle-ui::after { transform: translateX(16px); }
+  .discount-toggle-text { font-size: 13px; font-weight: 500; color: var(--ink-soft); line-height: 1.3; }
+  .discount-toggle-label:has(input:checked) .discount-toggle-text { color: #6b5419; }
+  .discount-hint {
+    font-size: 12px;
+    color: var(--ink-faint);
+    padding: 0 4px;
+    line-height: 1.4;
+    display: none;
+  }
+  .discount-hint.show { display: block; color: #8a6d1a; }
+
   /* ======================== CATALOGUE ======================== */
   .cat-search-bar {
     background: var(--surface);
@@ -1429,6 +1476,16 @@
       <div class="field">
         <label class="field-label">Qty</label>
         <input type="number" id="qty-input" placeholder="1" min="0" step="0.5" inputmode="decimal" />
+      </div>
+    </div>
+    <div class="field" id="discount-field" style="display:none;">
+      <div class="discount-row">
+        <label class="discount-toggle-label">
+          <input type="checkbox" id="discount-toggle" />
+          <span class="discount-toggle-ui"></span>
+          <span class="discount-toggle-text">This is a discounted / clubcard price</span>
+        </label>
+        <div class="discount-hint" id="discount-hint"></div>
       </div>
     </div>
     <div class="field">
@@ -1967,7 +2024,7 @@ function renderList() {
 
 function itemHTML(it) {
   const meta = [];
-  if (it.price != null && it.price !== "") meta.push(`<span class="price">${fmtMoney(it.price)}</span>`);
+  if (it.price != null && it.price !== "") meta.push(`<span class="price">${fmtMoney(it.price)}${it.is_discounted ? " <span style='color:var(--gold);font-size:10px;font-weight:700'>DEAL</span>" : ""}</span>`);
   if (it.qty) {
     if (meta.length) meta.push(`<span class="dot"></span>`);
     meta.push(`<span class="qty">${escapeHTML(it.qty)}${it.unit ? " " + escapeHTML(it.unit) : ""}</span>`);
@@ -2218,7 +2275,7 @@ function productCardHTML(p) {
         <div class="product-card-name">${escapeHTML(p.name)}</div>
         <div class="product-card-meta">
           ${p.store ? `<span class="store-badge">${escapeHTML(p.store)}</span>` : ""}
-          <span class="bought">bought ${p.use_count || 1}×</span>
+          <span class="bought">${p.use_count > 0 ? `bought ${p.use_count}×` : "not bought yet"}</span>
         </div>
       </div>
       <div class="product-card-right">
@@ -2462,6 +2519,10 @@ function bindEvents() {
   });
   $("#item-input").addEventListener("input", () => renderAutocomplete());
   $("#item-input").addEventListener("focus", () => renderAutocomplete());
+
+  // Show discount toggle when price is entered
+  $("#price-input").addEventListener("input", () => updateDiscountField());
+
   // Close autocomplete on outside click
   document.addEventListener("mousedown", (e) => {
     if (!e.target.closest(".autocomplete-wrap")) closeAutocomplete();
@@ -2736,7 +2797,8 @@ async function submitAddItem() {
     name, price, store, category, qty,
     checked: false,
     added_by: state.user.name,
-    added_at: new Date().toISOString()
+    added_at: new Date().toISOString(),
+    is_discounted: $("#discount-toggle").checked
   };
 
   // Optimistic insert
@@ -2749,6 +2811,8 @@ async function submitAddItem() {
   $("#price-input").value = "";
   $("#qty-input").value = "";
   $("#store-input").value = "";
+  $("#discount-toggle").checked = false;
+  $("#discount-field").style.display = "none";
   state.selectedCategory = "other";
   $$(".cat-pick").forEach(x => x.classList.toggle("active", x.dataset.cat === "other"));
   closeSheets();
@@ -3046,39 +3110,111 @@ function fillFromProduct(product) {
   }
   if (product.qty) $("#qty-input").value = product.qty;
   closeAutocomplete();
-  // Move focus to price so user can adjust
+  updateDiscountField();
   setTimeout(() => $("#price-input").focus(), 50);
 }
 
+function updateDiscountField() {
+  const priceStr = $("#price-input").value;
+  const name = $("#item-input").value.trim();
+  const store = $("#store-input").value;
+  const discountField = $("#discount-field");
+  const discountHint = $("#discount-hint");
+
+  if (!priceStr || !name) {
+    discountField.style.display = "none";
+    return;
+  }
+
+  // Find the saved catalogue price for this product+store combo
+  const catalogueProduct = state.products.find(p =>
+    p.name.toLowerCase() === name.toLowerCase() &&
+    (p.store || "") === (store || "")
+  );
+
+  discountField.style.display = "";
+
+  if (catalogueProduct && catalogueProduct.price != null) {
+    const savedPrice = Number(catalogueProduct.price);
+    const enteredPrice = parseFloat(priceStr);
+    if (!isNaN(enteredPrice) && Math.abs(enteredPrice - savedPrice) > 0.001) {
+      discountHint.textContent = `Catalogue price is ${fmtMoney(savedPrice)} — tick if this is a deal`;
+      discountHint.classList.add("show");
+    } else {
+      discountHint.classList.remove("show");
+    }
+  } else {
+    discountHint.classList.remove("show");
+  }
+}
+
 // ============================================================================
-// Product catalogue — upsert after each trip finishes
+// Product catalogue
 // ============================================================================
+
+// Called when adding to list — registers the product but does NOT count as bought
+// and does NOT update the catalogue price (that only happens on trip finish)
+async function upsertSingleProduct(item) {
+  if (!item.name) return;
+  const existing = state.products.find(p =>
+    p.name.toLowerCase() === item.name.toLowerCase() &&
+    (p.store || "") === (item.store || "")
+  );
+  if (existing) {
+    // Product already known — just update category if needed, never touch price or use_count
+    if (item.category && item.category !== existing.category) {
+      const updates = { category: item.category };
+      const { error } = await supabase.from("products").update(updates).eq("id", existing.id);
+      if (error) { console.error("catalogue update:", error); return; }
+      Object.assign(existing, updates);
+    }
+    // Already in catalogue — nothing more to do
+  } else {
+    // Brand new product — insert with use_count 0 (not bought yet, just on the list)
+    const newProd = {
+      name: item.name,
+      store: item.store || null,
+      price: item.price ?? null,
+      category: item.category || "other",
+      qty: item.qty || null,
+      unit: item.unit || null,
+      use_count: 0,
+      last_used: new Date().toISOString()
+    };
+    const { data, error } = await supabase.from("products").insert(newProd).select().single();
+    if (error) { console.error("catalogue insert:", error); return; }
+    if (data) state.products.push(data);
+  }
+  renderCatalogue();
+  renderCounts();
+  renderSettings();
+}
+
+// Called when finishing a trip — this is when we count it as "bought"
+// and update the catalogue price ONLY if not marked as discounted
 async function upsertProducts(items) {
-  // For each item, upsert into products (name + store = unique key)
-  // If price changed, update it. Bump use_count and last_used.
   for (const it of items) {
     if (!it.name) continue;
-    // Check if exists
     const existing = state.products.find(p =>
       p.name.toLowerCase() === it.name.toLowerCase() &&
       (p.store || "") === (it.store || "")
     );
     if (existing) {
-      // Update price (if provided) + use_count
       const updates = {
-        use_count: (existing.use_count || 1) + 1,
+        use_count: (existing.use_count || 0) + 1,
         last_used: new Date().toISOString()
       };
-      if (it.price != null && it.price !== "") updates.price = it.price;
+      // Only update catalogue price if NOT marked as discounted
+      if (!it.is_discounted && it.price != null && it.price !== "") updates.price = it.price;
       if (it.category) updates.category = it.category;
       await supabase.from("products").update(updates).eq("id", existing.id);
       Object.assign(existing, updates);
     } else {
-      // Insert new
+      // Item finished without ever being in catalogue — add it now with count 1
       const newProd = {
         name: it.name,
         store: it.store || null,
-        price: it.price ?? null,
+        price: it.is_discounted ? null : (it.price ?? null),
         category: it.category || "other",
         qty: it.qty || null,
         unit: it.unit || null,
@@ -3089,43 +3225,6 @@ async function upsertProducts(items) {
       if (data) state.products.push(data);
     }
   }
-}
-
-// Also upsert when manually adding items (so catalogue builds even without finishing a trip)
-async function upsertSingleProduct(item) {
-  if (!item.name) return;
-  const existing = state.products.find(p =>
-    p.name.toLowerCase() === item.name.toLowerCase() &&
-    (p.store || "") === (item.store || "")
-  );
-  if (existing) {
-    const updates = {
-      use_count: (existing.use_count || 1) + 1,
-      last_used: new Date().toISOString()
-    };
-    if (item.price != null && item.price !== "") updates.price = item.price;
-    if (item.category) updates.category = item.category;
-    const { error } = await supabase.from("products").update(updates).eq("id", existing.id);
-    if (error) { console.error("catalogue update:", error); return; }
-    Object.assign(existing, updates);
-  } else {
-    const newProd = {
-      name: item.name,
-      store: item.store || null,
-      price: item.price ?? null,
-      category: item.category || "other",
-      qty: item.qty || null,
-      unit: item.unit || null,
-      use_count: 1,
-      last_used: new Date().toISOString()
-    };
-    const { data, error } = await supabase.from("products").insert(newProd).select().single();
-    if (error) { console.error("catalogue insert:", error); return; }
-    if (data) state.products.push(data);
-  }
-  renderCatalogue();
-  renderCounts();
-  renderSettings();
 }
 
 // ============================================================================
