@@ -8,29 +8,26 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #faf9f6; --accent: #d98c72; --text: #2d2d2d; --white: #ffffff; --gray: #888; }
+        :root { --bg: #faf9f6; --accent: #d98c72; --text: #2d2d2d; --white: #ffffff; }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        header { text-align: center; padding: 40px 20px; animation: fadeIn 1s ease-in; }
-        .icon-circle { width: 60px; height: 60px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        h1 { font-family: 'Playfair Display', serif; font-size: 2.5rem; margin: 10px 0; font-weight: 400; }
+        header { text-align: center; padding: 60px 20px 40px; }
+        .icon-circle { width: 60px; height: 60px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.03); }
+        h1 { font-family: 'Playfair Display', serif; font-size: 2.8rem; margin: 0; font-weight: 400; letter-spacing: -1px; }
         h1 span { font-style: italic; color: var(--accent); }
-        .subtitle { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.1rem; color: var(--gray); margin-bottom: 20px; }
-        .container { width: 92%; max-width: 450px; padding-bottom: 120px; }
-        .card { background: var(--white); padding: 25px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.02); margin-bottom: 20px; border: 1px solid rgba(0,0,0,0.02); }
-        input, select, button { width: 100%; padding: 14px; margin: 8px 0; border-radius: 12px; border: 1px solid #eee; font-size: 16px; box-sizing: border-box; transition: 0.2s; outline: none; }
-        input:focus { border-color: var(--accent); }
+        .subtitle { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.1rem; color: #999; margin-top: 10px; }
+        .container { width: 92%; max-width: 420px; padding-bottom: 120px; }
+        .card { background: var(--white); padding: 25px; border-radius: 24px; box-shadow: 0 15px 40px rgba(0,0,0,0.02); margin-bottom: 20px; border: 1px solid rgba(0,0,0,0.01); }
+        input, select, button { width: 100%; padding: 14px; margin: 8px 0; border-radius: 14px; border: 1px solid #f0f0f0; font-size: 16px; box-sizing: border-box; outline: none; }
         button { background: var(--text); color: white; border: none; cursor: pointer; font-weight: 600; }
         button.secondary { background: var(--accent); }
-        .item-row { display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid #f9f9f9; }
-        .checkbox { width: 22px; height: 22px; margin-right: 15px; accent-color: var(--accent); }
+        .item-row { display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid #fcfcfc; }
+        .checkbox { width: 24px; height: 24px; margin-right: 15px; accent-color: var(--accent); cursor: pointer; }
         .item-info { flex-grow: 1; }
-        .item-meta { font-size: 0.75rem; color: var(--gray); margin-top: 2px; }
-        .note-bubble { background: #fefefe; border-left: 3px solid var(--accent); padding: 10px 15px; margin-bottom: 10px; border-radius: 0 12px 12px 0; font-size: 0.9rem; }
-        .note-author { font-size: 0.7rem; font-weight: 600; color: var(--accent); text-transform: uppercase; margin-bottom: 4px; }
-        #shopping-footer { position: fixed; bottom: 0; width: 100%; max-width: 450px; background: white; padding: 20px; box-shadow: 0 -10px 30px rgba(0,0,0,0.05); display: none; border-radius: 20px 20px 0 0; z-index: 100; }
-        .shopping-mode-active { background-color: #f2f4f6; }
-        .shopping-mode-active .not-shopping { display: none; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .note-bubble { background: #fdfdfd; padding: 12px; border-radius: 18px; margin-bottom: 12px; border-left: 4px solid var(--accent); font-size: 0.95rem; }
+        .note-meta { font-size: 0.7rem; color: var(--accent); font-weight: 700; margin-bottom: 4px; text-transform: uppercase; }
+        #shop-footer { position: fixed; bottom: 20px; width: 90%; max-width: 380px; background: var(--text); color: white; padding: 20px; border-radius: 24px; display: none; justify-content: space-between; align-items: center; box-shadow: 0 20px 40px rgba(0,0,0,0.2); z-index: 1000; }
+        .shopping-active { background: #f0f2f5; }
+        .shopping-active .hide-in-shop { display: none; }
     </style>
 </head>
 <body>
@@ -42,193 +39,164 @@
 </header>
 
 <div class="container">
-    <!-- Auth Section -->
-    <div id="auth-section" class="card">
-        <input type="email" id="email" placeholder="Email address">
+    <!-- AUTH -->
+    <div id="auth-box" class="card">
+        <input type="email" id="email" placeholder="Email">
         <input type="password" id="password" placeholder="Password">
         <button onclick="login()">Sign In</button>
-        <p id="auth-error" style="color: var(--accent); font-size: 0.8rem; text-align: center; display: none; margin-top: 15px; font-style: italic;"></p>
+        <p id="auth-err" style="color:var(--accent); font-size:0.8rem; text-align:center; display:none; margin-top:10px;"></p>
     </div>
 
-    <!-- Main Content -->
-    <div id="main-section" style="display:none;">
-        
-        <!-- Add Items -->
-        <div class="card not-shopping">
-            <input type="text" id="item-name" placeholder="Add an item...">
-            <div style="display:flex; gap: 10px;">
-                <select id="item-shop">
-                    <option value="Lidl">Lidl</option>
-                    <option value="Tesco">Tesco</option>
-                    <option value="Home Bargains">Home Bargains</option>
-                </select>
-                <input type="number" id="item-price" placeholder="£ 0.00" step="0.01">
+    <!-- MAIN -->
+    <div id="app" style="display:none;">
+        <div class="card hide-in-shop">
+            <input type="text" id="new-item" placeholder="What do we need?">
+            <div style="display:flex; gap:10px;">
+                <select id="new-shop"><option>Lidl</option><option>Tesco</option><option>Home Bargains</option></select>
+                <input type="number" id="new-price" placeholder="£" step="0.01">
             </div>
-            <button onclick="addItem()" class="secondary">Add to List</button>
+            <button class="secondary" onclick="addItem()">Add to List</button>
         </div>
 
-        <!-- The List -->
         <div class="card">
-            <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h3 style="font-family: 'Playfair Display', serif; margin: 0;">Our Items</h3>
-                <button onclick="toggleShoppingMode()" style="width: auto; padding: 6px 15px; font-size: 0.8rem;">
-                    Shopping Mode
-                </button>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h3 style="font-family:'Playfair Display'; margin:0;">Current List</h3>
+                <button onclick="toggleShop()" style="width:auto; padding:6px 16px; font-size:0.8rem;">Shop Mode</button>
             </div>
-            <div id="shopping-list"></div>
+            <div id="items-list"></div>
         </div>
 
-        <!-- Notes Section -->
-        <div class="card not-shopping">
-            <h3 style="font-family: 'Playfair Display', serif; margin-top: 0;">Notes for Each Other</h3>
+        <div class="card hide-in-shop">
+            <h3 style="font-family:'Playfair Display'; margin-top:0;">Notes for Each Other</h3>
             <div id="notes-list"></div>
-            <div style="display:flex; gap: 8px; margin-top: 15px;">
-                <input type="text" id="note-content" placeholder="Type a note...">
-                <button onclick="addNote()" style="width: 60px;" class="secondary">Send</button>
+            <div style="display:flex; gap:10px; margin-top:15px;">
+                <input type="text" id="new-note" placeholder="Write a note...">
+                <button onclick="addNote()" class="secondary" style="width:80px;">Send</button>
             </div>
         </div>
 
-        <!-- Spending Report -->
-        <div class="card not-shopping">
-            <h3 style="font-family: 'Playfair Display', serif; margin-top: 0;">Spend History</h3>
+        <div class="card hide-in-shop">
+            <h3 style="font-family:'Playfair Display'; margin-top:0;">Spend Over Time</h3>
             <canvas id="historyChart"></canvas>
         </div>
     </div>
 </div>
 
-<div id="shopping-footer">
-    <div style="display:flex; justify-content: space-between; align-items: center;">
-        <div>Total selected: <strong id="shop-total" style="color: var(--accent); font-size: 1.2rem;">£0.00</strong></div>
-        <button onclick="finishShopping()" class="secondary" style="width: auto; padding: 10px 25px;">Finish Trip</button>
-    </div>
+<div id="shop-footer">
+    <span>Total: <strong id="live-total">£0.00</strong></span>
+    <button onclick="finishShop()" class="secondary" style="width:auto; padding:10px 24px;">Finish & Archive</button>
 </div>
 
 <script>
-    const supabaseUrl = 'https://yurgugvqdnpmbzqepes.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl1cmd1Z3ZxZG5wcG1ienFlcGVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwNjg3MjUsImV4cCI6MjA5MzY0NDcyNX0.tjX8TmlDS_RJR4BhEN8bkIB8sy-yKpufx8l1UH2Mj-g';
-    const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
+    const SURL = 'https://yurgugvqdnpmbzqepes.supabase.co';
+    const SKEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl1cmd1Z3ZxZG5wcG1ienFlcGVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwNjg3MjUsImV4cCI6MjA5MzY0NDcyNX0.tjX8TmlDS_RJR4BhEN8bkIB8sy-yKpufx8l1UH2Mj-g';
+    const _sb = supabase.createClient(SURL, SKEY);
 
-    let isShoppingMode = false;
-    let userEmail = "";
+    let shopMode = false;
+    let currentUser = null;
 
     async function login() {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const errorEl = document.getElementById('auth-error');
-        
-        try {
-            const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
-            if (error) throw error;
-            userEmail = email;
-            document.getElementById('auth-section').style.display = 'none';
-            document.getElementById('main-section').style.display = 'block';
-            loadAll();
-            initRealtime();
-        } catch (err) {
-            errorEl.innerText = "Error: " + err.message;
-            errorEl.style.display = 'block';
+        const e = document.getElementById('email').value;
+        const p = document.getElementById('password').value;
+        const { data, error } = await _sb.auth.signInWithPassword({ email: e, password: p });
+        if(error) {
+            document.getElementById('auth-err').innerText = error.message;
+            document.getElementById('auth-err').style.display = 'block';
+        } else {
+            currentUser = data.user;
+            document.getElementById('auth-box').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+            start();
         }
     }
 
-    async function loadAll() {
-        loadItems();
-        loadNotes();
-        loadHistory();
+    async function start() {
+        refreshItems();
+        refreshNotes();
+        refreshHistory();
+        _sb.channel('updates').on('postgres_changes',{event:'*',schema:'public',table:'items'},()=>refreshItems()).subscribe();
+        _sb.channel('notes').on('postgres_changes',{event:'*',schema:'public',table:'notes'},()=>refreshNotes()).subscribe();
     }
 
     async function addItem() {
-        const name = document.getElementById('item-name').value;
-        const price = document.getElementById('item-price').value || 0;
-        const shop = document.getElementById('item-shop').value;
-        if (!name) return;
-        await _supabase.from('items').insert([{ name, price, shop, is_purchased: false, added_by: userEmail }]);
-        document.getElementById('item-name').value = '';
-        document.getElementById('item-price').value = '';
+        const name = document.getElementById('new-item').value;
+        const price = document.getElementById('new-price').value || 0;
+        const shop = document.getElementById('new-shop').value;
+        if(!name) return;
+        await _sb.from('items').insert([{ name, price, shop }]);
+        document.getElementById('new-item').value = '';
     }
 
-    async function loadItems() {
-        const { data } = await _supabase.from('items').select('*').order('created_at', { ascending: false });
-        const container = document.getElementById('shopping-list');
-        container.innerHTML = data.length ? data.map(item => `
+    async function refreshItems() {
+        const { data } = await _sb.from('items').select('*').order('created_at', {ascending: false});
+        const container = document.getElementById('items-list');
+        container.innerHTML = data.map(i => `
             <div class="item-row">
-                <input type="checkbox" class="checkbox" ${item.is_purchased ? 'checked' : ''} 
-                    onclick="toggleItem(${item.id}, ${item.is_purchased})">
+                <input type="checkbox" class="checkbox" ${i.is_purchased?'checked':''} onclick="updateItem(${i.id},${i.is_purchased})">
                 <div class="item-info">
-                    <span style="${item.is_purchased ? 'text-decoration: line-through; color: #bbb;' : 'font-weight: 500;'}">${item.name}</span>
-                    <div class="item-meta">£${item.price} • ${item.shop}</div>
+                    <span style="${i.is_purchased?'text-decoration:line-through;color:#ccc':'font-weight:500'}">${i.name}</span>
+                    <div style="font-size:0.75rem; color:#aaa; margin-top:2px;">£${i.price} • ${i.shop}</div>
                 </div>
             </div>
-        `).join('') : '<p style="color:#aaa; font-style:italic; font-size:0.9rem;">List is empty...</p>';
-        if (isShoppingMode) calculateTotal();
+        `).join('');
+        if(shopMode) updateLiveTotal();
     }
 
-    async function toggleItem(id, status) {
-        await _supabase.from('items').update({ is_purchased: !status }).eq('id', id);
+    async function updateItem(id, status) {
+        await _sb.from('items').update({is_purchased: !status}).eq('id', id);
     }
 
-    function toggleShoppingMode() {
-        isShoppingMode = !isShoppingMode;
-        document.body.classList.toggle('shopping-mode-active');
-        document.getElementById('shopping-footer').style.display = isShoppingMode ? 'block' : 'none';
-        calculateTotal();
+    function toggleShop() {
+        shopMode = !shopMode;
+        document.body.classList.toggle('shopping-active');
+        document.getElementById('shop-footer').style.display = shopMode ? 'flex' : 'none';
+        updateLiveTotal();
     }
 
-    async function calculateTotal() {
-        const { data } = await _supabase.from('items').select('price').eq('is_purchased', true);
-        const total = data.reduce((acc, curr) => acc + parseFloat(curr.price || 0), 0);
-        document.getElementById('shop-total').innerText = `£${total.toFixed(2)}`;
+    async function updateLiveTotal() {
+        const { data } = await _sb.from('items').select('price').eq('is_purchased', true);
+        const total = data.reduce((acc, curr) => acc + parseFloat(curr.price), 0);
+        document.getElementById('live-total').innerText = `£${total.toFixed(2)}`;
     }
 
-    async function finishShopping() {
-        const { data: checked } = await _supabase.from('items').select('*').eq('is_purchased', true);
-        if (checked.length === 0) return toggleShoppingMode();
-        
-        const total = checked.reduce((acc, curr) => acc + parseFloat(curr.price || 0), 0);
-        await _supabase.from('shopping_history').insert([{ total_spent: total, items_count: checked.length }]);
-        await _supabase.from('items').delete().eq('is_purchased', true);
-        
-        toggleShoppingMode();
-        loadHistory();
+    async function finishShop() {
+        const { data: checked } = await _sb.from('items').select('*').eq('is_purchased', true);
+        if(checked.length === 0) return toggleShop();
+        const total = checked.reduce((acc, curr) => acc + parseFloat(curr.price), 0);
+        await _sb.from('shopping_history').insert([{ total_spent: total, items_count: checked.length }]);
+        await _sb.from('items').delete().eq('is_purchased', true);
+        toggleShop();
+        refreshHistory();
     }
 
     async function addNote() {
-        const content = document.getElementById('note-content').value;
-        if (!content) return;
-        const authorName = userEmail.split('@')[0];
-        await _supabase.from('notes').insert([{ content, author: authorName.charAt(0).toUpperCase() + authorName.slice(1) }]);
-        document.getElementById('note-content').value = '';
+        const content = document.getElementById('new-note').value;
+        if(!content) return;
+        const author = currentUser.email.toLowerCase().includes('marek') ? 'Marek' : 'Zuzanna';
+        await _sb.from('notes').insert([{ content, author }]);
+        document.getElementById('new-note').value = '';
     }
 
-    async function loadNotes() {
-        const { data } = await _supabase.from('notes').select('*').order('created_at', { ascending: false }).limit(5);
+    async function refreshNotes() {
+        const { data } = await _sb.from('notes').select('*').order('created_at', {ascending: false}).limit(5);
         document.getElementById('notes-list').innerHTML = data.map(n => `
-            <div class="note-bubble">
-                <div class="note-author">${n.author}</div>
-                ${n.content}
-            </div>
+            <div class="note-bubble"><div class="note-meta">${n.author}</div>${n.content}</div>
         `).join('');
     }
 
-    async function loadHistory() {
-        const { data } = await _supabase.from('shopping_history').select('*').order('created_at', { ascending: true }).limit(10);
-        if (!data.length) return;
+    async function refreshHistory() {
+        const { data } = await _sb.from('shopping_history').select('*').order('created_at', {ascending: true}).limit(10);
+        if(!data.length) return;
         const ctx = document.getElementById('historyChart').getContext('2d');
-        if (window.myChart) window.myChart.destroy();
+        if(window.myChart) window.myChart.destroy();
         window.myChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: data.map(d => new Date(d.created_at).toLocaleDateString(undefined, {month:'short', day:'numeric'})),
-                datasets: [{ data: data.map(d => d.total_spent), borderColor: '#d98c72', tension: 0.4, pointBackgroundColor: '#d98c72', fill: false }]
+            type:'line',
+            data:{
+                labels: data.map(d => new Date(d.created_at).toLocaleDateString()),
+                datasets:[{ data: data.map(d=>d.total_spent), borderColor:'#d98c72', tension:0.4, fill:false }]
             },
-            options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+            options:{ plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true } } }
         });
-    }
-
-    function initRealtime() {
-        _supabase.channel('db-changes')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'items' }, () => loadItems())
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'notes' }, () => loadNotes())
-            .subscribe();
     }
 </script>
 </body>
