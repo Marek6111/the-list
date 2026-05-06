@@ -3105,7 +3105,8 @@ async function upsertSingleProduct(item) {
     };
     if (item.price != null && item.price !== "") updates.price = item.price;
     if (item.category) updates.category = item.category;
-    await supabase.from("products").update(updates).eq("id", existing.id);
+    const { error } = await supabase.from("products").update(updates).eq("id", existing.id);
+    if (error) { console.error("catalogue update:", error); return; }
     Object.assign(existing, updates);
   } else {
     const newProd = {
@@ -3119,10 +3120,9 @@ async function upsertSingleProduct(item) {
       last_used: new Date().toISOString()
     };
     const { data, error } = await supabase.from("products").insert(newProd).select().single();
-    if (error) { console.error("upsertSingleProduct:", error); return; }
+    if (error) { console.error("catalogue insert:", error); return; }
     if (data) state.products.push(data);
   }
-  // Re-render catalogue and counts so the new product appears immediately
   renderCatalogue();
   renderCounts();
   renderSettings();
