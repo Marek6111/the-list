@@ -1077,52 +1077,70 @@
     font-size: 14px;
   }
 
-  /* Discount toggle */
-  .discount-row { display: flex; flex-direction: column; gap: 6px; }
-  .discount-toggle-label {
-    display: flex; align-items: center; gap: 10px;
-    cursor: pointer;
-    padding: 12px 14px;
-    background: var(--bg-soft);
-    border-radius: var(--radius);
-    border: 1.5px solid transparent;
-    transition: all 0.15s;
+  /* Deal price sheet */
+  .deal-item-name {
+    font-family: var(--display);
+    font-size: 22px; font-weight: 500;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 4px;
   }
-  .discount-toggle-label:has(input:checked) {
-    background: #fff8e6;
-    border-color: var(--gold);
+  .deal-normal-price {
+    font-size: 13px; color: var(--ink-faint);
+    margin-bottom: 4px;
   }
-  .discount-toggle-label input[type="checkbox"] { display: none; }
-  .discount-toggle-ui {
-    width: 36px; height: 20px;
-    background: var(--line);
-    border-radius: 999px;
+  .deal-savings {
+    font-size: 13px; font-weight: 600;
+    color: var(--sage);
+    min-height: 20px;
+    padding: 0 4px;
+    margin-top: -6px;
+    margin-bottom: 4px;
+  }
+
+  /* Shop item deal price display */
+  .shop-item-prices {
+    display: flex; flex-direction: column; align-items: flex-end; gap: 2px;
     flex-shrink: 0;
-    position: relative;
-    transition: background 0.2s;
   }
-  .discount-toggle-ui::after {
-    content: '';
-    position: absolute;
-    width: 16px; height: 16px;
-    background: white;
-    border-radius: 50%;
-    top: 2px; left: 2px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-    transition: transform 0.2s;
-  }
-  .discount-toggle-label:has(input:checked) .discount-toggle-ui { background: var(--gold); }
-  .discount-toggle-label:has(input:checked) .discount-toggle-ui::after { transform: translateX(16px); }
-  .discount-toggle-text { font-size: 13px; font-weight: 500; color: var(--ink-soft); line-height: 1.3; }
-  .discount-toggle-label:has(input:checked) .discount-toggle-text { color: #6b5419; }
-  .discount-hint {
+  .shop-item-price-normal {
     font-size: 12px;
     color: var(--ink-faint);
-    padding: 0 4px;
-    line-height: 1.4;
-    display: none;
+    text-decoration: line-through;
+    font-variant-numeric: tabular-nums;
   }
-  .discount-hint.show { display: block; color: #8a6d1a; }
+  .shop-item-price.deal {
+    color: var(--sage);
+  }
+  .shop-item-price.deal::after {
+    content: ' 🏷️';
+    font-size: 12px;
+  }
+  .deal-badge {
+    font-size: 10px; font-weight: 700;
+    color: white;
+    background: var(--sage);
+    padding: 2px 6px;
+    border-radius: 999px;
+    letter-spacing: 0.04em;
+  }
+
+  /* Savings summary in finish trip confirm */
+  .savings-row {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    margin: 8px 0 14px;
+    font-size: 13px;
+  }
+  .savings-amount {
+    font-weight: 700;
+    color: var(--sage);
+  }
+
+  /* Stats savings card */
+  .stat-card.savings .value { color: var(--sage); }
+
+  /* Discount toggle CSS kept for possible future use */
+  .discount-row { display: flex; flex-direction: column; gap: 6px; }
 
   /* ======================== CATALOGUE ======================== */
   .cat-search-bar {
@@ -1478,16 +1496,6 @@
         <input type="number" id="qty-input" placeholder="1" min="0" step="0.5" inputmode="decimal" />
       </div>
     </div>
-    <div class="field" id="discount-field" style="display:none;">
-      <div class="discount-row">
-        <label class="discount-toggle-label">
-          <input type="checkbox" id="discount-toggle" />
-          <span class="discount-toggle-ui"></span>
-          <span class="discount-toggle-text">This is a discounted / clubcard price</span>
-        </label>
-        <div class="discount-hint" id="discount-hint"></div>
-      </div>
-    </div>
     <div class="field">
       <label class="field-label">Store</label>
       <div class="store-row">
@@ -1650,6 +1658,29 @@
       <div class="cat-grid" id="new-cat-grid"></div>
     </div>
     <button class="submit-btn" id="new-product-submit">Add to catalogue</button>
+  </div>
+</div>
+
+<!-- DEAL PRICE SHEET -->
+<div class="sheet" id="sheet-deal-price">
+  <div class="sheet-handle"></div>
+  <div class="sheet-head">
+    <div class="sheet-title">Deal <em>price</em></div>
+    <button class="sheet-close" data-close>✕</button>
+  </div>
+  <div class="sheet-body">
+    <input type="hidden" id="deal-item-id" />
+    <div class="deal-item-name" id="deal-item-name"></div>
+    <div class="deal-normal-price" id="deal-normal-price"></div>
+    <div class="field" style="margin-top:14px;">
+      <label class="field-label">Deal / Clubcard price</label>
+      <div class="price-input-wrap">
+        <input type="number" id="deal-price-input" placeholder="0.00" min="0" step="0.01" inputmode="decimal" />
+      </div>
+    </div>
+    <div class="deal-savings" id="deal-savings"></div>
+    <button class="submit-btn" id="deal-price-submit">Apply deal price</button>
+    <button class="danger-btn" id="deal-price-clear" style="text-align:center;margin-top:6px;">Remove deal price</button>
   </div>
 </div>
 
@@ -2024,7 +2055,7 @@ function renderList() {
 
 function itemHTML(it) {
   const meta = [];
-  if (it.price != null && it.price !== "") meta.push(`<span class="price">${fmtMoney(it.price)}${it.is_discounted ? " <span style='color:var(--gold);font-size:10px;font-weight:700'>DEAL</span>" : ""}</span>`);
+  if (it.price != null && it.price !== "") meta.push(`<span class="price">${fmtMoney(it.price)}</span>`);
   if (it.qty) {
     if (meta.length) meta.push(`<span class="dot"></span>`);
     meta.push(`<span class="qty">${escapeHTML(it.qty)}${it.unit ? " " + escapeHTML(it.unit) : ""}</span>`);
@@ -2053,11 +2084,16 @@ function renderShop() {
   const container = $("#shop-items-container");
   const items = state.items;
 
-  // Total = sum of CHECKED items
+  // Total = sum of CHECKED items (using deal_price if set, else normal price)
   const checked = items.filter(i => i.checked);
-  const checkedTotal = checked.reduce((s, i) => s + Number(i.price || 0) * Number(i.qty || 1), 0);
+  const checkedTotal = checked.reduce((s, i) => {
+    const p = (i.deal_price != null && i.deal_price !== "") ? Number(i.deal_price) : Number(i.price || 0);
+    return s + p * Number(i.qty || 1);
+  }, 0);
+  const normalTotal = checked.reduce((s, i) => s + Number(i.price || 0) * Number(i.qty || 1), 0);
+  const savings = normalTotal - checkedTotal;
   $("#shop-total-num").textContent = fmtMoneyShort(checkedTotal);
-  $("#shop-progress-text").textContent = `${checked.length} / ${items.length}`;
+  $("#shop-progress-text").textContent = `${checked.length} / ${items.length}${savings > 0.001 ? " · saving " + fmtMoney(savings) : ""}`;
   const pct = items.length === 0 ? 0 : (checked.length / items.length) * 100;
   $("#shop-progress-fill").style.width = pct + "%";
 
@@ -2090,7 +2126,10 @@ function renderShop() {
     arr.sort((a,b) => Number(a.checked) - Number(b.checked) || a.name.localeCompare(b.name));
     const storeTotal = arr
       .filter(i => i.checked)
-      .reduce((s, i) => s + Number(i.price || 0) * Number(i.qty || 1), 0);
+      .reduce((s, i) => {
+        const p = (i.deal_price != null && i.deal_price !== "") ? Number(i.deal_price) : Number(i.price || 0);
+        return s + p * Number(i.qty || 1);
+      }, 0);
     html.push(`
       <div class="shop-store-group">
         <div class="shop-store-head">
@@ -2104,13 +2143,31 @@ function renderShop() {
 }
 
 function shopItemHTML(it) {
-  const lineTotal = (it.price != null && it.price !== "") ? Number(it.price) * Number(it.qty || 1) : null;
-  const priceHtml = lineTotal != null
-    ? `<div class="shop-item-price">${fmtMoney(lineTotal)}</div>`
-    : `<div class="shop-item-price no-price">no price</div>`;
+  const hasDeal = it.deal_price != null && it.deal_price !== "";
+  const hasNormal = it.price != null && it.price !== "";
+  const displayPrice = hasDeal ? Number(it.deal_price) : (hasNormal ? Number(it.price) : null);
+  const qty = Number(it.qty || 1);
+  const lineTotal = displayPrice != null ? displayPrice * qty : null;
+  const normalLineTotal = hasNormal ? Number(it.price) * qty : null;
+
+  let priceHtml = "";
+  if (hasDeal && hasNormal) {
+    priceHtml = `
+      <div class="shop-item-prices">
+        <div class="shop-item-price-normal">${fmtMoney(normalLineTotal)}</div>
+        <div class="shop-item-price deal">${fmtMoney(lineTotal)}</div>
+      </div>`;
+  } else if (lineTotal != null) {
+    priceHtml = `<div class="shop-item-price">${fmtMoney(lineTotal)}</div>`;
+  } else {
+    priceHtml = `<div class="shop-item-price no-price">tap to add</div>`;
+  }
+
   const meta = [];
-  if (it.qty) meta.push(`${escapeHTML(it.qty)}${it.unit ? " " + escapeHTML(it.unit) : ""}`);
+  if (it.qty) meta.push(`${escapeHTML(String(it.qty))}${it.unit ? " " + escapeHTML(it.unit) : ""}`);
   if (it.category && CAT_BY_ID[it.category]) meta.push(CAT_BY_ID[it.category].label);
+  if (hasDeal) meta.push(`🏷️ deal`);
+
   return `
     <div class="shop-item ${it.checked ? "checked" : ""}" data-id="${escapeHTML(it.id)}" data-shop-toggle>
       <div class="shop-checkbox">
@@ -2120,7 +2177,9 @@ function shopItemHTML(it) {
         <div class="shop-item-name">${escapeHTML(it.name)}</div>
         ${meta.length ? `<div class="shop-item-meta">${meta.join(" · ")}</div>` : ""}
       </div>
-      ${priceHtml}
+      <div class="shop-item-price-wrap" data-deal-edit data-id="${escapeHTML(it.id)}" style="cursor:pointer">
+        ${priceHtml}
+      </div>
     </div>`;
 }
 
@@ -2498,6 +2557,8 @@ function bindEvents() {
   });
 
   $("#shop-items-container").addEventListener("click", (e) => {
+    const dealEdit = e.target.closest("[data-deal-edit]");
+    if (dealEdit) { openDealPrice(dealEdit.dataset.id); return; }
     const itemEl = e.target.closest("[data-shop-toggle]");
     if (!itemEl) return;
     toggleShopItem(itemEl.dataset.id);
@@ -2519,10 +2580,6 @@ function bindEvents() {
   });
   $("#item-input").addEventListener("input", () => renderAutocomplete());
   $("#item-input").addEventListener("focus", () => renderAutocomplete());
-
-  // Show discount toggle when price is entered
-  $("#price-input").addEventListener("input", () => updateDiscountField());
-
   // Close autocomplete on outside click
   document.addEventListener("mousedown", (e) => {
     if (!e.target.closest(".autocomplete-wrap")) closeAutocomplete();
@@ -2534,6 +2591,9 @@ function bindEvents() {
   $("#new-store-input").addEventListener("keydown", e => { if (e.key === "Enter") submitAddStore(); });
 
   $("#confirm-finish-btn").addEventListener("click", finishTrip);
+  $("#deal-price-submit").addEventListener("click", applyDealPrice);
+  $("#deal-price-clear").addEventListener("click", clearDealPrice);
+  $("#deal-price-input").addEventListener("input", updateDealSavings);
   $("#clear-stats-btn").addEventListener("click", () => { closeSheets(); setTimeout(() => openSheet("sheet-confirm-clear"), 50); });
   $("#confirm-clear-btn").addEventListener("click", clearStats);
 
@@ -2797,8 +2857,7 @@ async function submitAddItem() {
     name, price, store, category, qty,
     checked: false,
     added_by: state.user.name,
-    added_at: new Date().toISOString(),
-    is_discounted: $("#discount-toggle").checked
+    added_at: new Date().toISOString()
   };
 
   // Optimistic insert
@@ -2811,8 +2870,6 @@ async function submitAddItem() {
   $("#price-input").value = "";
   $("#qty-input").value = "";
   $("#store-input").value = "";
-  $("#discount-toggle").checked = false;
-  $("#discount-field").style.display = "none";
   state.selectedCategory = "other";
   $$(".cat-pick").forEach(x => x.classList.toggle("active", x.dataset.cat === "other"));
   closeSheets();
@@ -2940,13 +2997,32 @@ async function submitAddStore() {
 
 function finishTripPrompt() {
   const checked = state.items.filter(i => i.checked);
-  if (checked.length === 0) {
-    showToast("Tick some items first");
-    return;
-  }
-  const total = checked.reduce((s, i) => s + Number(i.price || 0) * Number(i.qty || 1), 0);
-  $("#confirm-total").textContent = fmtMoney(total);
+  if (checked.length === 0) { showToast("Tick some items first"); return; }
+
+  const actualTotal = checked.reduce((s, i) => {
+    const p = (i.deal_price != null && i.deal_price !== "") ? Number(i.deal_price) : Number(i.price || 0);
+    return s + p * Number(i.qty || 1);
+  }, 0);
+  const normalTotal = checked.reduce((s, i) => s + Number(i.price || 0) * Number(i.qty || 1), 0);
+  const savings = normalTotal - actualTotal;
+
+  $("#confirm-total").textContent = fmtMoney(actualTotal);
   $("#confirm-sub").textContent = `${checked.length} item${checked.length === 1 ? "" : "s"} will be archived`;
+
+  // Show savings row if any deals were used
+  let savingsRow = $("#confirm-savings-row");
+  if (!savingsRow) {
+    savingsRow = document.createElement("div");
+    savingsRow.id = "confirm-savings-row";
+    savingsRow.className = "savings-row";
+    $("#confirm-sub").after(savingsRow);
+  }
+  if (savings > 0.001) {
+    savingsRow.innerHTML = `🏷️ You saved <span class="savings-amount">${fmtMoney(savings)}</span> with deals!`;
+    savingsRow.style.display = "";
+  } else {
+    savingsRow.style.display = "none";
+  }
   openSheet("sheet-confirm-finish");
 }
 
@@ -2954,13 +3030,19 @@ async function finishTrip() {
   const checked = state.items.filter(i => i.checked);
   if (checked.length === 0) { closeSheets(); return; }
 
-  const total = checked.reduce((s, i) => s + Number(i.price || 0) * Number(i.qty || 1), 0);
+  const actualTotal = checked.reduce((s, i) => {
+    const p = (i.deal_price != null && i.deal_price !== "") ? Number(i.deal_price) : Number(i.price || 0);
+    return s + p * Number(i.qty || 1);
+  }, 0);
+  const normalTotal = checked.reduce((s, i) => s + Number(i.price || 0) * Number(i.qty || 1), 0);
+  const totalSavings = normalTotal - actualTotal;
+
   const storeSummary = {};
   for (const it of checked) {
     const key = it.store || "Anywhere";
-    storeSummary[key] = (storeSummary[key] || 0) + Number(it.price || 0) * Number(it.qty || 1);
+    const p = (it.deal_price != null && it.deal_price !== "") ? Number(it.deal_price) : Number(it.price || 0);
+    storeSummary[key] = (storeSummary[key] || 0) + p * Number(it.qty || 1);
   }
-  // Round store totals
   for (const k in storeSummary) storeSummary[k] = Math.round(storeSummary[k] * 100) / 100;
 
   closeSheets();
@@ -2971,7 +3053,9 @@ async function finishTrip() {
     .from("trips")
     .insert({
       finished_by: state.user.name,
-      total: Math.round(total * 100) / 100,
+      total: Math.round(actualTotal * 100) / 100,
+      normal_total: Math.round(normalTotal * 100) / 100,
+      savings: Math.round(totalSavings * 100) / 100,
       item_count: checked.length,
       store_summary: storeSummary
     })
@@ -2990,6 +3074,7 @@ async function finishTrip() {
     trip_id: trip.id,
     name: it.name,
     price: it.price,
+    deal_price: it.deal_price || null,
     store: it.store,
     category: it.category,
     qty: it.qty,
@@ -3014,7 +3099,7 @@ async function finishTrip() {
   await loadTrips();
   renderAll();
 
-  showToast(`Trip done — ${fmtMoney(total)} 🎉`, 2400);
+  showToast(`Trip done — ${fmtMoney(actualTotal)}${totalSavings > 0.001 ? " · saved " + fmtMoney(totalSavings) + " 🏷️" : " 🎉"}`, 2400);
   switchTab("list");
 }
 
@@ -3110,47 +3195,74 @@ function fillFromProduct(product) {
   }
   if (product.qty) $("#qty-input").value = product.qty;
   closeAutocomplete();
-  updateDiscountField();
   setTimeout(() => $("#price-input").focus(), 50);
 }
 
-function updateDiscountField() {
-  const priceStr = $("#price-input").value;
-  const name = $("#item-input").value.trim();
-  const store = $("#store-input").value;
-  const discountField = $("#discount-field");
-  const discountHint = $("#discount-hint");
-
-  if (!priceStr || !name) {
-    discountField.style.display = "none";
-    return;
-  }
-
-  // Find the saved catalogue price for this product+store combo
-  const catalogueProduct = state.products.find(p =>
-    p.name.toLowerCase() === name.toLowerCase() &&
-    (p.store || "") === (store || "")
-  );
-
-  discountField.style.display = "";
-
-  if (catalogueProduct && catalogueProduct.price != null) {
-    const savedPrice = Number(catalogueProduct.price);
-    const enteredPrice = parseFloat(priceStr);
-    if (!isNaN(enteredPrice) && Math.abs(enteredPrice - savedPrice) > 0.001) {
-      discountHint.textContent = `Catalogue price is ${fmtMoney(savedPrice)} — tick if this is a deal`;
-      discountHint.classList.add("show");
-    } else {
-      discountHint.classList.remove("show");
-    }
-  } else {
-    discountHint.classList.remove("show");
-  }
+// ============================================================================
+// Deal price (set in shop mode per item)
+// ============================================================================
+function openDealPrice(id) {
+  const it = state.items.find(x => x.id === id);
+  if (!it) return;
+  $("#deal-item-id").value = id;
+  $("#deal-item-name").textContent = it.name;
+  $("#deal-normal-price").textContent = it.price != null
+    ? `Normal price: ${fmtMoney(Number(it.price) * Number(it.qty || 1))}`
+    : "No catalogue price saved";
+  $("#deal-price-input").value = it.deal_price != null ? Number(it.deal_price).toFixed(2) : "";
+  updateDealSavings();
+  openSheet("sheet-deal-price");
+  setTimeout(() => $("#deal-price-input").focus(), 280);
 }
 
-// ============================================================================
-// Product catalogue
-// ============================================================================
+function updateDealSavings() {
+  const id = $("#deal-item-id").value;
+  const it = state.items.find(x => x.id === id);
+  const dealStr = $("#deal-price-input").value;
+  const el = $("#deal-savings");
+  if (!it || !dealStr || !it.price) { el.textContent = ""; return; }
+  const deal = parseFloat(dealStr) * Number(it.qty || 1);
+  const normal = Number(it.price) * Number(it.qty || 1);
+  const saving = normal - deal;
+  el.textContent = saving > 0.001
+    ? `You save ${fmtMoney(saving)} on this item 🏷️`
+    : saving < -0.001
+    ? `That's more than the normal price (${fmtMoney(normal)})`
+    : "";
+}
+
+async function applyDealPrice() {
+  const id = $("#deal-item-id").value;
+  const dealStr = $("#deal-price-input").value;
+  if (!dealStr) { showToast("Enter a deal price"); return; }
+  const deal = parseFloat(dealStr);
+  if (isNaN(deal)) { showToast("Invalid price"); return; }
+
+  const it = state.items.find(x => x.id === id);
+  if (!it) return;
+  it.deal_price = deal;
+
+  const { error } = await supabase.from("items").update({ deal_price: deal }).eq("id", id);
+  if (error) { console.error(error); showToast("Couldn't save deal price"); it.deal_price = null; }
+
+  closeSheets();
+  renderShop();
+  showToast("Deal price applied 🏷️");
+}
+
+async function clearDealPrice() {
+  const id = $("#deal-item-id").value;
+  const it = state.items.find(x => x.id === id);
+  if (!it) return;
+  it.deal_price = null;
+
+  const { error } = await supabase.from("items").update({ deal_price: null }).eq("id", id);
+  if (error) { console.error(error); showToast("Couldn't remove deal price"); }
+
+  closeSheets();
+  renderShop();
+  showToast("Deal price removed");
+}
 
 // Called when adding to list — registers the product but does NOT count as bought
 // and does NOT update the catalogue price (that only happens on trip finish)
@@ -3204,8 +3316,8 @@ async function upsertProducts(items) {
         use_count: (existing.use_count || 0) + 1,
         last_used: new Date().toISOString()
       };
-      // Only update catalogue price if NOT marked as discounted
-      if (!it.is_discounted && it.price != null && it.price !== "") updates.price = it.price;
+      // Only update catalogue price if item was NOT bought at a deal price
+      if (!it.deal_price && it.price != null && it.price !== "") updates.price = it.price;
       if (it.category) updates.category = it.category;
       await supabase.from("products").update(updates).eq("id", existing.id);
       Object.assign(existing, updates);
@@ -3214,7 +3326,7 @@ async function upsertProducts(items) {
       const newProd = {
         name: it.name,
         store: it.store || null,
-        price: it.is_discounted ? null : (it.price ?? null),
+        price: it.deal_price ? null : (it.price ?? null),
         category: it.category || "other",
         qty: it.qty || null,
         unit: it.unit || null,
