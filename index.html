@@ -1201,6 +1201,15 @@
     color: var(--ink-faint);
     flex-shrink: 0;
   }
+  .trip-card-delete {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    color: var(--ink-faint);
+    display: grid; place-items: center;
+    flex-shrink: 0;
+    transition: color 0.15s, background 0.15s;
+  }
+  .trip-card-delete:hover, .trip-card-delete:active { color: var(--rose); background: var(--rose-soft); }
 
   /* Receipt sheet */
   .receipt {
@@ -1306,6 +1315,19 @@
   .receipt-edit-btn:hover, .receipt-edit-btn:active {
     color: var(--accent);
     background: var(--accent-soft);
+  }
+  .receipt-delete-btn {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    color: var(--ink-faint);
+    display: grid; place-items: center;
+    flex-shrink: 0;
+    transition: color 0.15s, background 0.15s;
+    margin-left: 2px;
+  }
+  .receipt-delete-btn:hover, .receipt-delete-btn:active {
+    color: var(--rose);
+    background: var(--rose-soft);
   }
 
   /* Discount toggle CSS kept for possible future use */
@@ -2795,15 +2817,24 @@ function renderTripHistory() {
         <div class="trip-card-right">
           <div class="trip-card-total">${fmtMoney(t.total)}</div>
         </div>
-        <div class="trip-card-arrow">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-        </div>
+        <button class="trip-card-delete" data-delete-trip="${escapeHTML(t.id)}" title="Delete trip" aria-label="Delete trip">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>
+        </button>
       </div>`;
   }).join("");
 
-  // Bind click to open receipt
+  // Bind click — open receipt on card, delete on trash button
   $$(".trip-card", container).forEach(card => {
-    card.addEventListener("click", () => openTripReceipt(card.dataset.tripId));
+    card.addEventListener("click", (e) => {
+      if (e.target.closest("[data-delete-trip]")) return;
+      openTripReceipt(card.dataset.tripId);
+    });
+  });
+  $$("[data-delete-trip]", container).forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      deleteTrip(btn.dataset.deleteTrip);
+    });
   });
 }
 
@@ -2854,6 +2885,9 @@ function openTripReceipt(tripId) {
           <button class="receipt-edit-btn" data-ti-id="${escapeHTML(it.id)}" title="Edit deal price">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
           </button>
+          <button class="receipt-delete-btn" data-delete-ti="${escapeHTML(it.id)}" title="Delete item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>
+          </button>
         </div>`;
     }
   }
@@ -2901,6 +2935,14 @@ function openTripReceipt(tripId) {
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
       openReceiptItemEdit(btn.dataset.tiId, trip.id);
+    });
+  });
+
+  // Bind delete item buttons
+  $$(".receipt-delete-btn", $("#receipt-body")).forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      deleteReceiptItem(btn.dataset.deleteTi, trip.id);
     });
   });
 
@@ -3824,10 +3866,80 @@ async function clearStats() {
   if (tiErr) console.error("clear trip_items:", tiErr);
   const { error: trErr } = await supabase.from("trips").delete().neq("id", "00000000-0000-0000-0000-000000000000");
   if (trErr) console.error("clear trips:", trErr);
+  // Reset ALL use_counts to 0 — nothing is "bought" anymore
+  const { error: prErr } = await supabase.from("products").update({ use_count: 0 }).neq("id", "00000000-0000-0000-0000-000000000000");
+  if (prErr) console.error("clear product counts:", prErr);
   state.trips = [];
+  state.products.forEach(p => { p.use_count = 0; });
   renderStats();
+  renderCatalogue();
+  renderCounts();
   renderSettings();
   showToast("Stats cleared ✓", 2000);
+}
+
+async function deleteTrip(tripId) {
+  const trip = state.trips.find(t => t.id === tripId);
+  if (!trip) return;
+  const items = trip.trip_items || [];
+
+  // Decrement use_count in catalogue for each item in this trip
+  for (const ti of items) {
+    await decrementUseCount(ti.name, ti.store);
+  }
+
+  // Delete trip_items then trip from DB
+  await supabase.from("trip_items").delete().eq("trip_id", tripId);
+  await supabase.from("trips").delete().eq("id", tripId);
+
+  // Update local state
+  state.trips = state.trips.filter(t => t.id !== tripId);
+  renderStats();
+  renderCatalogue();
+  renderCounts();
+  renderSettings();
+  showToast("Trip deleted");
+}
+
+async function deleteReceiptItem(tiId, tripId) {
+  const trip = state.trips.find(t => t.id === tripId);
+  if (!trip) return;
+  const ti = (trip.trip_items || []).find(i => i.id === tiId);
+  if (!ti) return;
+
+  // Decrement use_count for this product
+  await decrementUseCount(ti.name, ti.store);
+
+  // Delete from DB
+  const { error } = await supabase.from("trip_items").delete().eq("id", tiId);
+  if (error) { console.error(error); showToast("Couldn't delete"); return; }
+
+  // Update local state
+  trip.trip_items = (trip.trip_items || []).filter(i => i.id !== tiId);
+  trip.item_count = Math.max(0, (trip.item_count || 1) - 1);
+
+  // Recalculate trip totals
+  await recalcTripTotals(trip);
+
+  // Re-open receipt with updated data
+  renderStats();
+  renderCatalogue();
+  closeSheets();
+  setTimeout(() => openTripReceipt(tripId), 80);
+  showToast("Item removed");
+}
+
+async function decrementUseCount(name, store) {
+  if (!name) return;
+  const product = state.products.find(p =>
+    p.name.toLowerCase() === name.toLowerCase() &&
+    (p.store || "") === (store || "")
+  );
+  if (!product) return;
+  const newCount = Math.max(0, (product.use_count || 1) - 1);
+  const { error } = await supabase.from("products").update({ use_count: newCount }).eq("id", product.id);
+  if (error) { console.error("decrementUseCount:", error); return; }
+  product.use_count = newCount;
 }
 
 // ============================================================================
