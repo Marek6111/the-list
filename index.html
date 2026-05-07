@@ -1124,6 +1124,63 @@
     letter-spacing: 0.04em;
   }
 
+  /* Contributions card */
+  .contributions-wrap { padding-top: 6px; }
+  .contribution-row {
+    margin-bottom: 16px;
+  }
+  .contribution-row:last-child { margin-bottom: 0; }
+  .contribution-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 8px;
+  }
+  .contribution-name {
+    font-family: var(--display);
+    font-style: italic;
+    font-size: 17px; font-weight: 500;
+  }
+  .contribution-name.marek { color: var(--sage); }
+  .contribution-name.zuzanna { color: var(--rose); }
+  .contribution-stats {
+    font-size: 12px; color: var(--ink-faint);
+    text-align: right;
+  }
+  .contribution-stats strong { color: var(--ink-soft); font-weight: 600; }
+  .contribution-bar {
+    height: 10px;
+    background: var(--bg-soft);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .contribution-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .contribution-fill.marek { background: var(--sage); }
+  .contribution-fill.zuzanna { background: var(--rose); }
+  .contribution-divider {
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px; margin: 12px 0 4px;
+    font-size: 11px; color: var(--ink-faint);
+    font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em;
+  }
+  .contribution-divider::before, .contribution-divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--line);
+  }
+
+  /* Receipt item author tag */
+  .receipt-item-author {
+    font-size: 10px; font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 999px;
+    flex-shrink: 0;
+    letter-spacing: 0.02em;
+    align-self: center;
+  }
+  .receipt-item-author.marek { background: var(--sage-soft); color: var(--sage); }
+  .receipt-item-author.zuzanna { background: var(--rose-soft); color: var(--rose); }
+
   /* Savings summary in finish trip confirm */
   .savings-row {
     display: flex; align-items: center; justify-content: center; gap: 8px;
@@ -1663,6 +1720,13 @@
           <div class="label">Total saved with deals 🏷️</div>
           <div class="value" id="stat-savings"><em>£</em>0</div>
         </div>
+      </div>
+
+      <!-- Contributions card -->
+      <div class="chart-card" id="contributions-card" style="display:none;">
+        <h3>Who <em>shops</em> more?</h3>
+        <div class="sub">Items added to the list across all trips</div>
+        <div class="contributions-wrap" id="contributions-wrap"></div>
       </div>
 
       <div class="chart-card">
@@ -2674,6 +2738,7 @@ function renderStats() {
   if (savEl) savEl.innerHTML = `<em>£</em>${totalSavings.toFixed(2)}`;
 
   renderTripHistory();
+  renderContributions();
 
   if (typeof Chart === "undefined") return;
   drawTripsChart();
@@ -2871,6 +2936,14 @@ function renderTripHistory() {
     const timeStr = d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     const stores = t.store_summary ? Object.keys(t.store_summary) : [];
     const savings = Number(t.savings || 0);
+
+    // Work out who contributed
+    const contributors = [...new Set((t.trip_items || []).map(i => i.added_by).filter(Boolean))];
+    const contribText = contributors.length >= 2
+      ? "Marek & Zuzanna"
+      : contributors.length === 1
+      ? contributors[0]
+      : t.finished_by || "";
     return `
       <div class="trip-card" data-trip-id="${escapeHTML(t.id)}">
         <div class="trip-card-left">
@@ -2879,7 +2952,7 @@ function renderTripHistory() {
             <span>${escapeHTML(timeStr)}</span>
             ${stores.map(s => `<span class="store-pill">${escapeHTML(s)}</span>`).join("")}
             <span>${t.item_count || 0} items</span>
-            ${t.finished_by ? `<span>by ${escapeHTML(t.finished_by)}</span>` : ""}
+            ${contribText ? `<span>👤 ${escapeHTML(contribText)}</span>` : ""}
           </div>
           ${savings > 0.001 ? `<div class="trip-card-savings">🏷️ saved ${fmtMoney(savings)}</div>` : ""}
         </div>
@@ -2905,6 +2978,54 @@ function renderTripHistory() {
       deleteTrip(btn.dataset.deleteTrip);
     });
   });
+}
+
+function renderContributions() {
+  const card = $("#contributions-card");
+  const wrap = $("#contributions-wrap");
+  if (!card || !wrap) return;
+
+  // Gather all trip_items across all trips
+  const allItems = state.trips.flatMap(t => t.trip_items || []);
+  if (allItems.length === 0) { card.style.display = "none"; return; }
+
+  // Count items and total spend per person
+  const people = { Marek: { items: 0, spend: 0 }, Zuzanna: { items: 0, spend: 0 } };
+  for (const it of allItems) {
+    const who = it.added_by;
+    if (!who) continue;
+    const key = who.toLowerCase() === "zuzanna" ? "Zuzanna" : "Marek";
+    people[key].items++;
+    const p = (it.deal_price != null && it.deal_price !== "") ? Number(it.deal_price) : Number(it.price || 0);
+    people[key].spend += p * Number(it.qty || 1);
+  }
+
+  const totalItems = people.Marek.items + people.Zuzanna.items;
+  const totalSpend = people.Marek.spend + people.Zuzanna.spend;
+  if (totalItems === 0) { card.style.display = "none"; return; }
+
+  card.style.display = "";
+
+  const html = ["Zuzanna", "Marek"].map(name => {
+    const p = people[name];
+    const itemPct = totalItems > 0 ? Math.round((p.items / totalItems) * 100) : 0;
+    const spendPct = totalSpend > 0 ? Math.round((p.spend / totalSpend) * 100) : 0;
+    const cls = name.toLowerCase();
+    return `
+      <div class="contribution-row">
+        <div class="contribution-head">
+          <span class="contribution-name ${cls}">${name}</span>
+          <span class="contribution-stats">
+            <strong>${p.items}</strong> items · <strong>${fmtMoney(p.spend)}</strong> · ${itemPct}%
+          </span>
+        </div>
+        <div class="contribution-bar">
+          <div class="contribution-fill ${cls}" style="width:${itemPct}%"></div>
+        </div>
+      </div>`;
+  }).join(`<div class="contribution-divider">vs</div>`);
+
+  wrap.innerHTML = html;
 }
 
 function openTripReceipt(tripId) {
@@ -2947,6 +3068,7 @@ function openTripReceipt(tripId) {
         <div class="receipt-item" data-ti-id="${escapeHTML(it.id)}">
           <div class="receipt-item-name">${cat.icon} ${escapeHTML(it.name)}</div>
           ${qty !== 1 ? `<div class="receipt-item-qty">×${qty}</div>` : ""}
+          ${it.added_by ? `<span class="receipt-item-author ${it.added_by.toLowerCase() === "zuzanna" ? "zuzanna" : "marek"}">${escapeHTML(it.added_by)}</span>` : ""}
           <div class="receipt-item-prices">
             ${hasDeal ? `<div class="receipt-item-normal">${fmtMoney(lineNormal)}</div>` : ""}
             <div class="receipt-item-price ${hasDeal ? "deal" : ""}">${it.price != null ? fmtMoney(lineActual) : "—"}</div>
@@ -3592,6 +3714,7 @@ async function finishTrip() {
     category: it.category,
     qty: it.qty,
     unit: it.unit,
+    added_by: it.added_by || null,
     bought_at: it.checked_at || new Date().toISOString()
   }));
   if (tripItemRows.length > 0) {
