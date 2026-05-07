@@ -3196,7 +3196,15 @@ function bindEvents() {
     if (e.key === "Escape")    { closeAutocomplete(); return; }
   });
   $("#item-input").addEventListener("input", () => renderAutocomplete());
-  $("#item-input").addEventListener("focus", () => renderAutocomplete());
+  $("#item-input").addEventListener("focus", () => {
+    // If autocomplete is already open, close it first so user can retype freely
+    // then re-render after a tick so it reflects current input
+    const list = $("#ac-list");
+    if (list && list.classList.contains("open")) {
+      closeAutocomplete();
+    }
+    setTimeout(() => renderAutocomplete(), 50);
+  });
   // Close autocomplete on outside click
   document.addEventListener("mousedown", (e) => {
     if (!e.target.closest(".autocomplete-wrap")) closeAutocomplete();
@@ -3793,15 +3801,22 @@ function renderAutocomplete() {
 
   list.classList.add("open");
 
-  // Dismiss keyboard on mobile when suggestions appear so they're visible
-  if (window.innerWidth < 720) {
-    $("#item-input").blur();
-  }
+  // Dismiss keyboard only when user deliberately scrolls the suggestion list
+  let touchStartY = 0;
+  list.addEventListener("touchstart", (e) => {
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+  list.addEventListener("touchmove", (e) => {
+    const deltaY = Math.abs(e.touches[0].clientY - touchStartY);
+    if (deltaY > 10) {
+      $("#item-input").blur();
+    }
+  }, { passive: true, once: true });
 
   // Bind click on each result
   $$(".ac-item", list).forEach(el => {
     el.addEventListener("mousedown", (e) => {
-      e.preventDefault(); // prevent blur closing it before click
+      e.preventDefault();
       const pid = el.dataset.productId;
       const product = state.products.find(p => p.id === pid);
       if (product) fillFromProduct(product);
