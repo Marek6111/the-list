@@ -1392,6 +1392,35 @@
     border-color: var(--ink);
   }
 
+  .cat-sort-row {
+    display: flex; align-items: center; gap: 6px;
+    padding-top: 10px;
+    overflow-x: auto; scrollbar-width: none;
+  }
+  .cat-sort-row::-webkit-scrollbar { display: none; }
+  .cat-sort-label {
+    font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--ink-faint);
+    flex-shrink: 0;
+  }
+  .cat-sort-chip {
+    flex-shrink: 0;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px; font-weight: 500;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--ink-soft);
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .cat-sort-chip.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
   .catalogue-group { margin-bottom: 26px; }
   .catalogue-group-head {
     display: flex; align-items: center; gap: 10px;
@@ -1601,6 +1630,12 @@
           <button id="cat-search-clear" class="cat-search-clear" style="display:none">✕</button>
         </div>
         <div class="cat-filter-row" id="cat-filter-row"></div>
+        <div class="cat-sort-row" id="cat-sort-row">
+          <span class="cat-sort-label">Sort:</span>
+          <button class="cat-sort-chip active" data-sort="popular">Most bought</button>
+          <button class="cat-sort-chip" data-sort="az">A–Z</button>
+          <button class="cat-sort-chip" data-sort="store">By store</button>
+        </div>
       </div>
       <div id="catalogue-container"></div>
     </section>
@@ -1985,7 +2020,8 @@ const state = {
   charts: {},
   acIndex: -1,
   catalogueSearch: "",
-  catalogueFilter: "all"   // "all" or a category id
+  catalogueFilter: "all",   // "all" or a category id
+  catalogueSort: "popular"  // "popular" | "az" | "store"
 };
 
 let supabase = null;
@@ -2477,8 +2513,16 @@ function renderCatalogue() {
   if (q) products = products.filter(p => p.name.toLowerCase().includes(q) || (p.store||"").toLowerCase().includes(q));
   if (filterCat !== "all") products = products.filter(p => (p.category || "other") === filterCat);
 
-  // Sort by use_count desc, then name
-  products.sort((a,b) => (b.use_count||0) - (a.use_count||0) || a.name.localeCompare(b.name));
+  // Sort based on selected sort mode
+  const sort = state.catalogueSort || "popular";
+  if (sort === "az") {
+    products.sort((a,b) => a.name.localeCompare(b.name));
+  } else if (sort === "store") {
+    products.sort((a,b) => (a.store || "zzz").localeCompare(b.store || "zzz") || a.name.localeCompare(b.name));
+  } else {
+    // popular — most bought first
+    products.sort((a,b) => (b.use_count||0) - (a.use_count||0) || a.name.localeCompare(b.name));
+  }
 
   // Build category filter chips
   const filterRow = $("#cat-filter-row");
@@ -2514,7 +2558,31 @@ function renderCatalogue() {
     return;
   }
 
-  // Group by category
+  // "By store" sort — group by store instead of category
+  if (sort === "store") {
+    const storeGroups = {};
+    for (const p of products) {
+      const key = p.store || "No store";
+      (storeGroups[key] ||= []).push(p);
+    }
+    const html = [];
+    for (const [store, arr] of Object.entries(storeGroups).sort((a,b) => a[0].localeCompare(b[0]))) {
+      html.push(`
+        <div class="catalogue-group">
+          <div class="catalogue-group-head">
+            <span class="icon">🏪</span>
+            <span>${escapeHTML(store)}</span>
+            <span class="count">${arr.length}</span>
+          </div>
+          ${arr.map(productCardHTML).join("")}
+        </div>`);
+    }
+    container.innerHTML = html.join("");
+    bindProductCards(container);
+    return;
+  }
+
+  // Default — group by category
   const groups = {};
   for (const p of products) {
     const cid = CAT_BY_ID[p.category] ? p.category : "other";
@@ -2536,24 +2604,7 @@ function renderCatalogue() {
       </div>`);
   }
   container.innerHTML = html.join("");
-
-  // Bind events on product cards
-  $$(".product-card", container).forEach(card => {
-    const pid = card.dataset.pid;
-    // tap card body = open edit sheet
-    card.addEventListener("click", (e) => {
-      if (e.target.closest(".product-add-list")) return; // handled below
-      openEditProduct(pid);
-    });
-    // "Add to list" button
-    const addBtn = card.querySelector(".product-add-list");
-    if (addBtn) {
-      addBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        addProductToList(pid);
-      });
-    }
-  });
+  bindProductCards(container);
 }
 
 function productCardHTML(p) {
@@ -2582,6 +2633,22 @@ function productCardHTML(p) {
         </button>
       </div>
     </div>`;
+}
+
+function bindProductCards(container) {
+  $$(".product-card", container).forEach(card => {
+    card.addEventListener("click", (e) => {
+      if (e.target.closest(".product-add-list")) return;
+      openEditProduct(card.dataset.pid);
+    });
+    const addBtn = card.querySelector(".product-add-list");
+    if (addBtn) {
+      addBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        addProductToList(card.dataset.pid);
+      });
+    }
+  });
 }
 
 // ============================================================================
@@ -3035,6 +3102,14 @@ function bindEvents() {
     $("#cat-search").value = "";
     state.catalogueSearch = "";
     renderCatalogue();
+  });
+  // Sort chips
+  $$(".cat-sort-chip").forEach(btn => {
+    btn.addEventListener("click", () => {
+      state.catalogueSort = btn.dataset.sort;
+      $$(".cat-sort-chip").forEach(b => b.classList.toggle("active", b === btn));
+      renderCatalogue();
+    });
   });
 
   // Edit product sheet
