@@ -1840,7 +1840,10 @@
   <div class="sheet-body">
     <div class="field">
       <label class="field-label">Name</label>
-      <input type="text" id="new-product-name" placeholder="e.g. Whole milk" autocomplete="off" />
+      <div class="autocomplete-wrap">
+        <input type="text" id="new-product-name" placeholder="e.g. Whole milk" autocomplete="off" />
+        <div class="autocomplete-list" id="new-product-ac-list"></div>
+      </div>
     </div>
     <div class="field-row">
       <div class="field">
@@ -3040,7 +3043,15 @@ function bindEvents() {
 
   // New product sheet
   $("#new-product-submit").addEventListener("click", submitNewProduct);
-  $("#new-product-name").addEventListener("keydown", e => { if (e.key === "Enter") submitNewProduct(); });
+  $("#new-product-name").addEventListener("keydown", e => {
+    if (e.key === "Enter") { closeNewProductAc(); submitNewProduct(); }
+    if (e.key === "Escape") closeNewProductAc();
+  });
+  $("#new-product-name").addEventListener("input", renderNewProductAc);
+  $("#new-product-name").addEventListener("focus", renderNewProductAc);
+  document.addEventListener("mousedown", (e) => {
+    if (!e.target.closest("#sheet-add-product .autocomplete-wrap")) closeNewProductAc();
+  });
 
   // Build edit cat grid
   buildCatGrid("edit-cat-grid", "editSelectedCategory");
@@ -3264,6 +3275,7 @@ function closeSheets() {
   $("#scrim").classList.remove("active");
   $$(".sheet").forEach(s => s.classList.remove("active"));
   closeAutocomplete();
+  closeNewProductAc();
 }
 
 // ============================================================================
@@ -3609,6 +3621,56 @@ function closeAutocomplete() {
   const list = $("#ac-list");
   if (list) { list.classList.remove("open"); list.innerHTML = ""; }
   state.acIndex = -1;
+}
+
+function renderNewProductAc() {
+  const q = $("#new-product-name").value.trim().toLowerCase();
+  const list = $("#new-product-ac-list");
+  if (!q || q.length < 1) { closeNewProductAc(); return; }
+
+  const matched = state.products.filter(p => p.name.toLowerCase().includes(q));
+  matched.sort((a, b) => {
+    const aS = a.name.toLowerCase().startsWith(q) ? 0 : 1;
+    const bS = b.name.toLowerCase().startsWith(q) ? 0 : 1;
+    return aS - bS || (b.use_count || 0) - (a.use_count || 0);
+  });
+
+  if (matched.length === 0) { closeNewProductAc(); return; }
+
+  list.innerHTML = `<div class="ac-section">Already in catalogue — tap to edit</div>` +
+    matched.slice(0, 6).map(p => {
+      const cat = CAT_BY_ID[p.category] || CAT_BY_ID.other;
+      const nameHtml = escapeHTML(p.name).replace(
+        new RegExp("(" + escapeHTML(q).replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")", "i"),
+        "<mark>$1</mark>"
+      );
+      return `
+        <div class="ac-item" data-product-id="${escapeHTML(p.id)}">
+          <div class="ac-icon">${cat.icon}</div>
+          <div class="ac-body">
+            <div class="ac-name">${nameHtml}</div>
+            <div class="ac-meta">${p.store || "any store"}</div>
+          </div>
+          <div class="ac-price ${p.price == null ? "none" : ""}">${p.price != null ? fmtMoney(p.price) : "no price"}</div>
+        </div>`;
+    }).join("");
+
+  list.classList.add("open");
+
+  $$(".ac-item", list).forEach(el => {
+    el.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      closeNewProductAc();
+      closeSheets();
+      // Small delay so sheet closes first, then edit opens
+      setTimeout(() => openEditProduct(el.dataset.productId), 120);
+    });
+  });
+}
+
+function closeNewProductAc() {
+  const list = $("#new-product-ac-list");
+  if (list) { list.classList.remove("open"); list.innerHTML = ""; }
 }
 
 function fillFromProduct(product) {
