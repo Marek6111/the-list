@@ -2343,7 +2343,9 @@ function renderSettings() {
   $("#settings-itemcount").textContent = state.items.length;
   $("#settings-tripcount").textContent = state.trips.length;
   $("#settings-productcount").textContent = state.products.length;
-  $("#settings-status").textContent = state.realtimeChannels.length ? "Live ✓" : "Offline";
+  const syncText = $("#sync-text").textContent || "";
+  const isLive = syncText.includes("Live") || syncText.includes("Synced");
+  $("#settings-status").textContent = isLive ? "Live ✓" : "Reconnecting…";
 }
 
 function renderList() {
@@ -3791,6 +3793,11 @@ function renderAutocomplete() {
 
   list.classList.add("open");
 
+  // Dismiss keyboard on mobile when suggestions appear so they're visible
+  if (window.innerWidth < 720) {
+    $("#item-input").blur();
+  }
+
   // Bind click on each result
   $$(".ac-item", list).forEach(el => {
     el.addEventListener("mousedown", (e) => {
@@ -3881,7 +3888,10 @@ function fillFromProduct(product) {
   }
   if (product.qty) $("#qty-input").value = product.qty;
   closeAutocomplete();
-  setTimeout(() => $("#price-input").focus(), 50);
+  // Only auto-focus price on desktop — on mobile the keyboard coming back up is annoying
+  if (window.innerWidth >= 720) {
+    setTimeout(() => $("#price-input").focus(), 50);
+  }
 }
 
 // ============================================================================
